@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+  "name": "LibraryTemplate",
+  "version": "1.0.0",
+  "description": "Templates for libraries compatible with the PlatformIO ecosystem",
+  "keywords": [
+    "template"
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "authors": [
+    {
+      "name": "Antonio Gelain",
+      "email": "antonio.gelain2@gmail.com",
+      "maintainer": true
+    }
+  ],
+  "license": "AGPL-3.0-only",
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": [],
+  "examples": [],
+  "export": {
+    "include": [
+      "src/**",
+      "include/**"
+    ]
+  }
+}
