@@ -40,8 +40,8 @@
   ],
   "examples": [
     {
-      "name": "",
-      "src": ""
+      "name": "Simple Ring Buffer Implementation",
+      "src": "examples/ring-buffer-basic.c"
     }
   ],
   "export": {
