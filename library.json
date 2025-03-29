@@ -1,27 +1,49 @@
 {
   "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
-  "name": "LibraryTemplate",
+  "name": "RingBuffer",
   "version": "1.0.0",
-  "description": "Templates for libraries compatible with the PlatformIO ecosystem",
+  "description": "This library implements all the functions used to create and manage a ring buffer. Can be used for any embedded system.",
   "keywords": [
-    "template"
+    "ring",
+    "buffer",
+    "ring-buffer",
+    "embedded"
   ],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/eagletrt/libring-buffer-sw.git"
   },
   "authors": [
     {
       "name": "Antonio Gelain",
       "email": "antonio.gelain2@gmail.com",
       "maintainer": true
+    },
+    {
+      "name": "Dorijan Di Zepp",
+      "email": "dorijan.dizepp@eagletrt.it",
+      "maintainer": true
     }
   ],
   "license": "AGPL-3.0-only",
   "frameworks": "*",
   "platforms": "*",
-  "headers": [],
-  "examples": [],
+  "dependencies": [
+    {
+      "name": "ArenaAllocator",
+      "version": "https://github.com/eagletrt/libarena-allocator-sw.git"
+    }
+  ],
+  "headers": [
+    "ring-buffer.h",
+    "ring-buffer-api.h"
+  ],
+  "examples": [
+    {
+      "name": "",
+      "src": ""
+    }
+  ],
   "export": {
     "include": [
       "src/**",
