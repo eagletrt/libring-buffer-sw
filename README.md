@@ -5,7 +5,7 @@ is a [FIFO](https://en.wikipedia.org/wiki/FIFO_(computing_and_electronics)) base
 (like a [queue](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)) for example),
 where the data can be pushed and pulled as if it is a data stream.
 
-This library provide a simple enough implementation of a ring buffer with dynamic allocation.
+This library provide a simple enough implementation of a ring buffer with dynamic allocation using an arena allocator.
 
 > [!NOTE]
 > The buffer can be thought as an array starting from the left and ending to the right
@@ -14,39 +14,29 @@ This library provide a simple enough implementation of a ring buffer with dynami
 
 ## Dependencies
 
-This library uses [ArenaAllocator](https://github.com/eagletrt/libarena-allocator-sw.git) for memory management. Make sure to initialize ArenaAllocatorHandler_t to use prev_errors array, as shown in the following section.
+This library uses [ArenaAllocator](https://github.com/eagletrt/libarena-allocator-sw.git) for memory management. Make sure to initialize ArenaAllocatorHandler_t to use data array, as shown in the following section.
 
 ## Usage
 
-To create a ring buffer first declare a variable using the `RingBuffer` macro
-by providing the item type and the maximum number of element of the buffer. \
+To create a ring buffer, first declare a variable using `RingBufferHandler_t`. In order to initialize it, an arena allocator is needed.\
 For example:
 ```c
-RingBuffer(int, 10) int_buf = ...;
-RingBuffer(double, 7) double_buf = ...;
-RingBuffer(struct Point, 2000) point_buf = ...;
+RingBufferHandler_t int_buf;
+RingBufferHandler_t point_buf;
+ArenaAllocatorHandler_t arena;
+
+arena_allocator_api_init(&arena);
+ring_buffer_init(&int_buf, sizeof(int), 10, NULL, NULL, &arena);
+ring_buffer_init(&point_buf, sizeof(struct), 4, NULL, NULL, &arena);
 ```
 
-Then initialize the buffer using the `ring_buffer_new` macro that requires
-the same item type and capacity given in the declaration.<br/>
-The macro doesn not allocate memory for the data buffer, meaning that the use of an arena allocator for initializzation is required.
-```c
-ArenaAllocatorHandler_t arena;
-arena_allocator_api_init(&arena);
-... = ring_buffer_new(int, 10, cs_enter, cs_exit);
-... = ring_buffer_new(double, 7, cs_enter, cs_exit);
-... = ring_buffer_new(struct Point, 2000, cs_enter, cs_exit);
+To remove any trace of the buffer, the solely `ring_buffer_clear` function is not sufficient as it doesn't deallocate the data buffer.
+To do so, `arena_allocator_api_free` will be used as follows:
 
-<buffer>.data = arena_allocator_api_calloc(&arena, data_size, capacity);
-```
-
-The following function can also be used to initialize the buffer. An initialized arena allocator is required to allocate memory for storing the buffer's data.
 ```c
-ArenaAllocatorHandler_t arena;
-arena_allocator_api_init(&arena);
-ring_buffer_init(&int_buf, int, 10, cs_enter, cs_exit, &arena);
-ring_buffer_init(&double_buf, double, 7, cs_enter, cs_exit), &arena;
-ring_buffer_init(&point_buf, struct Point, 2000, cs_enter, cs_exit, &arena);
+ring_buffer_clear(&int_buf);
+ring_buffer_clear(&point_buf);
+arena_allocator_api_free(&arena);
 ```
 
 The `cs_enter` and `cs_exit` function have to be implemented by the user

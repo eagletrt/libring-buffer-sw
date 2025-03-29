@@ -20,11 +20,11 @@
 
 #include <string.h>
 
-void _ring_buffer_cs_dummy(void) {
+void ring_buffer_cs_dummy(void) {
 }
 
-RingBufferReturnCode _ring_buffer_init(
-    RingBufferInterface *buffer,
+RingBufferReturnCode ring_buffer_init(
+    RingBufferHnadler_t *buffer,
     size_t data_size,
     size_t capacity,
     void (*cs_enter)(void),
@@ -36,33 +36,33 @@ RingBufferReturnCode _ring_buffer_init(
     buffer->size = 0;
     buffer->data_size = data_size;
     buffer->capacity = capacity;
-    buffer->cs_enter = cs_enter != NULL ? cs_enter : _ring_buffer_cs_dummy;
-    buffer->cs_exit = cs_exit != NULL ? cs_exit : _ring_buffer_cs_dummy;
+    buffer->cs_enter = cs_enter != NULL ? cs_enter : ring_buffer_cs_dummy;
+    buffer->cs_exit = cs_exit != NULL ? cs_exit : ring_buffer_cs_dummy;
     buffer->data = arena_allocator_api_calloc(arena, data_size, capacity);
     if (!buffer->data)
         return RING_BUFFER_NULL_POINTER;
     return RING_BUFFER_OK;
 }
 
-bool _ring_buffer_is_empty(RingBufferInterface *buffer) {
+bool ring_buffer_is_empty(RingBufferHnadler_t *buffer) {
     if (buffer == NULL)
         return true;
     return buffer->size == 0;
 }
 
-bool _ring_buffer_is_full(RingBufferInterface *buffer) {
+bool ring_buffer_is_full(RingBufferHnadler_t *buffer) {
     if (buffer == NULL)
         return false;
     return buffer->size >= buffer->capacity;
 }
 
-size_t _ring_buffer_size(RingBufferInterface *buffer) {
+size_t ring_buffer_size(RingBufferHnadler_t *buffer) {
     if (buffer == NULL)
         return 0U;
     return buffer->size;
 }
 
-RingBufferReturnCode _ring_buffer_push_front(RingBufferInterface *buffer, void *item) {
+RingBufferReturnCode ring_buffer_push_front(RingBufferHnadler_t *buffer, void *item) {
     if (buffer == NULL || item == NULL)
         return RING_BUFFER_NULL_POINTER;
 
@@ -88,7 +88,7 @@ RingBufferReturnCode _ring_buffer_push_front(RingBufferInterface *buffer, void *
     return RING_BUFFER_OK;
 }
 
-RingBufferReturnCode _ring_buffer_push_back(RingBufferInterface *buffer, void *item) {
+RingBufferReturnCode ring_buffer_push_back(RingBufferHnadler_t *buffer, void *item) {
     if (buffer == NULL || item == NULL)
         return RING_BUFFER_NULL_POINTER;
 
@@ -114,7 +114,7 @@ RingBufferReturnCode _ring_buffer_push_back(RingBufferInterface *buffer, void *i
     return RING_BUFFER_OK;
 }
 
-RingBufferReturnCode _ring_buffer_pop_front(RingBufferInterface *buffer, void *out) {
+RingBufferReturnCode ring_buffer_pop_front(RingBufferHnadler_t *buffer, void *out) {
     if (buffer == NULL)
         return RING_BUFFER_NULL_POINTER;
 
@@ -142,7 +142,7 @@ RingBufferReturnCode _ring_buffer_pop_front(RingBufferInterface *buffer, void *o
     return RING_BUFFER_OK;
 }
 
-RingBufferReturnCode _ring_buffer_pop_back(RingBufferInterface *buffer, void *out) {
+RingBufferReturnCode ring_buffer_pop_back(RingBufferHnadler_t *buffer, void *out) {
     if (buffer == NULL)
         return RING_BUFFER_NULL_POINTER;
 
@@ -168,7 +168,7 @@ RingBufferReturnCode _ring_buffer_pop_back(RingBufferInterface *buffer, void *ou
     return RING_BUFFER_OK;
 }
 
-RingBufferReturnCode _ring_buffer_front(RingBufferInterface *buffer, void *out) {
+RingBufferReturnCode ring_buffer_front(RingBufferHnadler_t *buffer, void *out) {
     if (buffer == NULL || out == NULL)
         return RING_BUFFER_NULL_POINTER;
 
@@ -188,7 +188,7 @@ RingBufferReturnCode _ring_buffer_front(RingBufferInterface *buffer, void *out) 
     return RING_BUFFER_OK;
 }
 
-RingBufferReturnCode _ring_buffer_back(RingBufferInterface *buffer, void *out) {
+RingBufferReturnCode ring_buffer_back(RingBufferHnadler_t *buffer, void *out) {
     if (buffer == NULL || out == NULL)
         return RING_BUFFER_NULL_POINTER;
 
@@ -211,7 +211,7 @@ RingBufferReturnCode _ring_buffer_back(RingBufferInterface *buffer, void *out) {
     return RING_BUFFER_OK;
 }
 
-void *_ring_buffer_peek_front(RingBufferInterface *buffer) {
+void *ring_buffer_peek_front(RingBufferHnadler_t *buffer) {
     if (buffer == NULL)
         return NULL;
 
@@ -227,7 +227,7 @@ void *_ring_buffer_peek_front(RingBufferInterface *buffer) {
     return front;
 }
 
-void *_ring_buffer_peek_back(RingBufferInterface *buffer) {
+void *ring_buffer_peek_back(RingBufferHnadler_t *buffer) {
     if (buffer == NULL)
         return NULL;
 
@@ -248,7 +248,7 @@ void *_ring_buffer_peek_back(RingBufferInterface *buffer) {
     return back;
 }
 
-RingBufferReturnCode _ring_buffer_clear(RingBufferInterface *buffer) {
+RingBufferReturnCode ring_buffer_clear(RingBufferHnadler_t *buffer) {
     if (buffer == NULL)
         return RING_BUFFER_NULL_POINTER;
     buffer->cs_enter();
