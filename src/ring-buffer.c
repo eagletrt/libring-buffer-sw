@@ -39,7 +39,7 @@ RingBufferReturnCode ring_buffer_init(
     buffer->cs_enter = cs_enter != NULL ? cs_enter : ring_buffer_cs_dummy;
     buffer->cs_exit = cs_exit != NULL ? cs_exit : ring_buffer_cs_dummy;
     buffer->data = arena_allocator_api_calloc(arena, data_size, capacity);
-    if (!buffer->data)
+    if (buffer->data == NULL)
         return RING_BUFFER_NULL_POINTER;
     return RING_BUFFER_OK;
 }

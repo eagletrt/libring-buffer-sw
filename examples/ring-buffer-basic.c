@@ -26,8 +26,8 @@ int main(void) {
     ArenaAllocatorHandler_t arena;
 
     arena_allocator_api_init(&arena);
-    RingBufferHnadler_t int_buf;
-    ring_buffer_init(&int_buf, sizeof(int), 10, NULL, NULL, &arena);
+    RingBuffer(int, 10) int_buf = ring_buffer_new(int, 10, NULL, NULL);
+    ring_buffer_init(&int_buf, int, 10, NULL, NULL, &arena);
 
     // Push items in the buffer
     for (int i = 0; i < 5; ++i) {

@@ -24,9 +24,9 @@
 #include <stdbool.h>
 
 /*!
-   * \brief Structure definition used to pass the buffer handler as a function parameter
-   * \attention This function should not be used directly
-   */
+ * \brief Structure definition used to pass the buffer handler as a function parameter
+ * \attention This function should not be used directly
+ */
 typedef struct {
     size_t start;
     size_t size;
@@ -38,8 +38,8 @@ typedef struct {
 } RingBufferHnadler_t;
 
 /*!
-   * \brief Enum with all the possible return codes for the ring buffer functions
-   */
+ * \brief Enum with all the possible return codes for the ring buffer functions
+ */
 typedef enum {
     RING_BUFFER_OK,
     RING_BUFFER_NULL_POINTER,
