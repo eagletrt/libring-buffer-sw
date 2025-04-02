@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
   "name": "RingBuffer",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "This library implements all the functions used to create and manage a ring buffer. Can be used for any embedded system.",
   "keywords": [
     "ring",

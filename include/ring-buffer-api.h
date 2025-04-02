@@ -39,8 +39,8 @@
  *     - RING_BUFFER_NULL if the buffer handler is NULL
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_init(
-   RingBufferHnadler_t *buffer,
+RingBufferReturnCode ring_buffer_api_init(
+   RingBufferHandler_t *buffer,
    size_t data_size,
    size_t capacity,
    void (*cs_enter)(void),
@@ -53,7 +53,7 @@ RingBufferReturnCode ring_buffer_init(
  * \param buffer The buffer handler structure
  * \return True if the buffer is empty, false otherwise
  */
-bool ring_buffer_is_empty(RingBufferHnadler_t *buffer);
+bool ring_buffer_api_is_empty(const RingBufferHandler_t *buffer);
 
 /*!
  * \brief Check if the buffer is full
@@ -61,7 +61,7 @@ bool ring_buffer_is_empty(RingBufferHnadler_t *buffer);
  * \param buffer The buffer handler structure
  * \return True if the buffer is full, false otherwise
  */
-bool ring_buffer_is_full(RingBufferHnadler_t *buffer);
+bool ring_buffer_api_is_full(const RingBufferHandler_t *buffer);
 
 /*!
  * \brief Get the current number of elements in the buffer
@@ -69,7 +69,7 @@ bool ring_buffer_is_full(RingBufferHnadler_t *buffer);
  * \param buffer The buffer handler structure
  * \return size_t The buffer size
  */
-size_t ring_buffer_size(RingBufferHnadler_t *buffer);
+size_t ring_buffer_api_size(const RingBufferHandler_t *buffer);
 
 /*!
  * \brief Insert an element af the start of the buffer
@@ -81,7 +81,7 @@ size_t ring_buffer_size(RingBufferHnadler_t *buffer);
  *     - RING_BUFFER_FULL if the buffer is full
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_push_front(RingBufferHnadler_t *buffer, void *item);
+RingBufferReturnCode ring_buffer_api_push_front(RingBufferHandler_t *buffer, void *item);
 
 /*!
  * \brief Insert an element af the end of the buffer
@@ -93,7 +93,7 @@ RingBufferReturnCode ring_buffer_push_front(RingBufferHnadler_t *buffer, void *i
  *     - RING_BUFFER_FULL if the buffer is full
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_push_back(RingBufferHnadler_t *buffer, void *item);
+RingBufferReturnCode ring_buffer_api_push_back(RingBufferHandler_t *buffer, void *item);
 
 /*!
  * \brief Remove an element from the front of the buffer
@@ -106,7 +106,7 @@ RingBufferReturnCode ring_buffer_push_back(RingBufferHnadler_t *buffer, void *it
  *     - RING_BUFFER_EMPTY if the buffer is empty
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_pop_front(RingBufferHnadler_t *buffer, void *out);
+RingBufferReturnCode ring_buffer_api_pop_front(RingBufferHandler_t *buffer, void *out);
 
 /*!
  * \brief Remove an element from the end of the buffer
@@ -119,7 +119,7 @@ RingBufferReturnCode ring_buffer_pop_front(RingBufferHnadler_t *buffer, void *ou
  *     - RING_BUFFER_EMPTY if the buffer is empty
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_pop_back(RingBufferHnadler_t *buffer, void *out);
+RingBufferReturnCode ring_buffer_api_pop_back(RingBufferHandler_t *buffer, void *out);
 
 /*!
  * \brief Get a copy of the element at the start of the buffer
@@ -131,7 +131,7 @@ RingBufferReturnCode ring_buffer_pop_back(RingBufferHnadler_t *buffer, void *out
  *     - RING_BUFFER_EMPTY if the buffer is empty
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_front(RingBufferHnadler_t *buffer, void *out);
+RingBufferReturnCode ring_buffer_api_front(RingBufferHandler_t *buffer, void *out);
 
 /*!
  * \brief Get a copy of the element at the end of the buffer
@@ -143,7 +143,7 @@ RingBufferReturnCode ring_buffer_front(RingBufferHnadler_t *buffer, void *out);
  *     - RING_BUFFER_EMPTY if the buffer is empty
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_back(RingBufferHnadler_t *buffer, void *out);
+RingBufferReturnCode ring_buffer_api_back(RingBufferHandler_t *buffer, void *out);
 
 /*!
  * \brief Get a pointer to the element at the start of the buffer
@@ -153,7 +153,7 @@ RingBufferReturnCode ring_buffer_back(RingBufferHnadler_t *buffer, void *out);
  * \param buffer The buffer handler structure
  * \return void * The item at the start of the buffer
  */
-void *ring_buffer_peek_front(RingBufferHnadler_t *buffer);
+void *ring_buffer_api_peek_front(RingBufferHandler_t *buffer);
 
 /*!
  * \brief Get a pointer to the element at the end of the buffer
@@ -163,7 +163,7 @@ void *ring_buffer_peek_front(RingBufferHnadler_t *buffer);
  * \param buffer The buffer handler structure
  * \return void * The item at the end of the buffer
  */
-void *ring_buffer_peek_back(RingBufferHnadler_t *buffer);
+void *ring_buffer_api_peek_back(RingBufferHandler_t *buffer);
 
 /*!
  * \brief Clear the buffer removing all items
@@ -174,7 +174,7 @@ void *ring_buffer_peek_back(RingBufferHnadler_t *buffer);
  *     - RING_BUFFER_NULL if the buffer handler is NULL
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_clear(RingBufferHnadler_t *buffer);
+RingBufferReturnCode ring_buffer_api_clear(RingBufferHandler_t *buffer);
 
 // Function that substitute cs_enter and cs_exit if they are NULL
 void ring_buffer_cs_dummy(void);

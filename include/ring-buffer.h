@@ -35,7 +35,7 @@ typedef struct {
     void (*cs_enter)(void);
     void (*cs_exit)(void);
     void *data;
-} RingBufferHnadler_t;
+} RingBufferHandler_t;
 
 /*!
  * \brief Enum with all the possible return codes for the ring buffer functions
