@@ -27,7 +27,7 @@
  * \brief Structure definition used to pass the buffer handler as a function parameter
  * \attention This function should not be used directly
  */
-typedef struct {
+struct RingBufferHandler {
     size_t start;
     size_t size;
     uint16_t data_size;
@@ -35,16 +35,16 @@ typedef struct {
     void (*cs_enter)(void);
     void (*cs_exit)(void);
     void *data;
-} RingBufferHandler_t;
+};
 
 /*!
  * \brief Enum with all the possible return codes for the ring buffer functions
  */
-typedef enum {
-    RING_BUFFER_OK,
-    RING_BUFFER_NULL_POINTER,
-    RING_BUFFER_EMPTY,
-    RING_BUFFER_FULL
-} RingBufferReturnCode;
+enum RingBufferReturnCode {
+    RING_BUFFER_RC_OK,
+    RING_BUFFER_RC_NULL_POINTER,
+    RING_BUFFER_RC_EMPTY,
+    RING_BUFFER_RC_FULL
+};
 
 #endif // RING_BUFFER_H

@@ -24,7 +24,7 @@
 int main(void) {
     srand(time(NULL));
     ArenaAllocatorHandler_t arena;
-    RingBufferHandler_t int_buf;
+    struct RingBufferHandler int_buf;
 
     arena_allocator_api_init(&arena);
     ring_buffer_api_init(&int_buf, sizeof(int), 10, NULL, NULL, &arena);
@@ -32,14 +32,14 @@ int main(void) {
     // Push items in the buffer
     for (int i = 0; i < 5; ++i) {
         int num = rand() % 100 + 1;
-        if (ring_buffer_api_push_back(&int_buf, &num) != RING_BUFFER_OK)
+        if (ring_buffer_api_push_back(&int_buf, &num) != RING_BUFFER_RC_OK)
             printf("[ERROR]: Cant push element inside the buffer\n");
     }
 
     // Get items and info about the buffer
-    printf("Buffer size: %lu\n", ring_buffer_api_size(&int_buf));
+    printf("Buffer size: %u\n", ring_buffer_api_size(&int_buf));
     int val = 0;
-    if (ring_buffer_api_front(&int_buf, &val) == RING_BUFFER_OK)
+    if (ring_buffer_api_front(&int_buf, &val) == RING_BUFFER_RC_OK)
         printf("Front element: %d\n", val);
     int *p_val = ring_buffer_api_peek_back(&int_buf);
     if (p_val != NULL)
@@ -48,13 +48,13 @@ int main(void) {
     // Remove items from the buffer
     printf("Values: ");
     while (!ring_buffer_api_is_empty(&int_buf)) {
-        if (ring_buffer_api_pop_back(&int_buf, &val) == RING_BUFFER_OK)
+        if (ring_buffer_api_pop_back(&int_buf, &val) == RING_BUFFER_RC_OK)
             printf("%d ", val);
     }
     printf("\n");
 
     // Clear the buffer
-    if (ring_buffer_api_clear(&int_buf) != RING_BUFFER_OK)
+    if (ring_buffer_api_clear(&int_buf) != RING_BUFFER_RC_OK)
         printf("[ERROR]: Cant clear buffer\n");
 
     arena_allocator_api_free(&arena);

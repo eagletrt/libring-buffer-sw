@@ -39,13 +39,13 @@
  *     - RING_BUFFER_NULL if the buffer handler is NULL
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_api_init(
-   RingBufferHandler_t *buffer,
-   size_t data_size,
-   size_t capacity,
-   void (*cs_enter)(void),
-   void (*cs_exit)(void),
-   ArenaAllocatorHandler_t *arena);
+enum RingBufferReturnCode ring_buffer_api_init(
+    struct RingBufferHandler *const buffer,
+    const size_t data_size,
+    const size_t capacity,
+    void (*cs_enter)(void),
+    void (*cs_exit)(void),
+    ArenaAllocatorHandler_t *const arena);
 
 /*!
  * \brief Check if the buffer is empty
@@ -53,7 +53,7 @@ RingBufferReturnCode ring_buffer_api_init(
  * \param buffer The buffer handler structure
  * \return True if the buffer is empty, false otherwise
  */
-bool ring_buffer_api_is_empty(const RingBufferHandler_t *buffer);
+bool ring_buffer_api_is_empty(const struct RingBufferHandler *const buffer);
 
 /*!
  * \brief Check if the buffer is full
@@ -61,7 +61,7 @@ bool ring_buffer_api_is_empty(const RingBufferHandler_t *buffer);
  * \param buffer The buffer handler structure
  * \return True if the buffer is full, false otherwise
  */
-bool ring_buffer_api_is_full(const RingBufferHandler_t *buffer);
+bool ring_buffer_api_is_full(const struct RingBufferHandler *const buffer);
 
 /*!
  * \brief Get the current number of elements in the buffer
@@ -69,7 +69,15 @@ bool ring_buffer_api_is_full(const RingBufferHandler_t *buffer);
  * \param buffer The buffer handler structure
  * \return size_t The buffer size
  */
-size_t ring_buffer_api_size(const RingBufferHandler_t *buffer);
+size_t ring_buffer_api_size(const struct RingBufferHandler *const buffer);
+
+/*!
+ * \brief Get the maximum number of elements the buffer can contain
+ * 
+ * \param buffer The buffer handler structure
+ * \return size_t The buffer capacity
+ */
+size_t ring_buffer_api_capacity(const struct RingBufferHandler *const buffer);
 
 /*!
  * \brief Insert an element af the start of the buffer
@@ -81,7 +89,7 @@ size_t ring_buffer_api_size(const RingBufferHandler_t *buffer);
  *     - RING_BUFFER_FULL if the buffer is full
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_api_push_front(RingBufferHandler_t *buffer, void *item);
+enum RingBufferReturnCode ring_buffer_api_push_front(struct RingBufferHandler *const buffer, const void *const item);
 
 /*!
  * \brief Insert an element af the end of the buffer
@@ -93,7 +101,7 @@ RingBufferReturnCode ring_buffer_api_push_front(RingBufferHandler_t *buffer, voi
  *     - RING_BUFFER_FULL if the buffer is full
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_api_push_back(RingBufferHandler_t *buffer, void *item);
+enum RingBufferReturnCode ring_buffer_api_push_back(struct RingBufferHandler *const buffer, const void *const item);
 
 /*!
  * \brief Remove an element from the front of the buffer
@@ -106,7 +114,7 @@ RingBufferReturnCode ring_buffer_api_push_back(RingBufferHandler_t *buffer, void
  *     - RING_BUFFER_EMPTY if the buffer is empty
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_api_pop_front(RingBufferHandler_t *buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *const buffer, void *const out);
 
 /*!
  * \brief Remove an element from the end of the buffer
@@ -119,7 +127,7 @@ RingBufferReturnCode ring_buffer_api_pop_front(RingBufferHandler_t *buffer, void
  *     - RING_BUFFER_EMPTY if the buffer is empty
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_api_pop_back(RingBufferHandler_t *buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *const buffer, void *const out);
 
 /*!
  * \brief Get a copy of the element at the start of the buffer
@@ -131,7 +139,7 @@ RingBufferReturnCode ring_buffer_api_pop_back(RingBufferHandler_t *buffer, void 
  *     - RING_BUFFER_EMPTY if the buffer is empty
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_api_front(RingBufferHandler_t *buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *const buffer, void *const out);
 
 /*!
  * \brief Get a copy of the element at the end of the buffer
@@ -143,7 +151,7 @@ RingBufferReturnCode ring_buffer_api_front(RingBufferHandler_t *buffer, void *ou
  *     - RING_BUFFER_EMPTY if the buffer is empty
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_api_back(RingBufferHandler_t *buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *const buffer, void *out);
 
 /*!
  * \brief Get a pointer to the element at the start of the buffer
@@ -153,7 +161,7 @@ RingBufferReturnCode ring_buffer_api_back(RingBufferHandler_t *buffer, void *out
  * \param buffer The buffer handler structure
  * \return void * The item at the start of the buffer
  */
-void *ring_buffer_api_peek_front(RingBufferHandler_t *buffer);
+void *ring_buffer_api_peek_front(const struct RingBufferHandler *const buffer);
 
 /*!
  * \brief Get a pointer to the element at the end of the buffer
@@ -163,7 +171,7 @@ void *ring_buffer_api_peek_front(RingBufferHandler_t *buffer);
  * \param buffer The buffer handler structure
  * \return void * The item at the end of the buffer
  */
-void *ring_buffer_api_peek_back(RingBufferHandler_t *buffer);
+void *ring_buffer_api_peek_back(const struct RingBufferHandler *const buffer);
 
 /*!
  * \brief Clear the buffer removing all items
@@ -174,9 +182,6 @@ void *ring_buffer_api_peek_back(RingBufferHandler_t *buffer);
  *     - RING_BUFFER_NULL if the buffer handler is NULL
  *     - RING_BUFFER_OK otherwise
  */
-RingBufferReturnCode ring_buffer_api_clear(RingBufferHandler_t *buffer);
-
-// Function that substitute cs_enter and cs_exit if they are NULL
-void ring_buffer_cs_dummy(void);
+enum RingBufferReturnCode ring_buffer_api_clear(struct RingBufferHandler *const buffer);
 
 #endif
