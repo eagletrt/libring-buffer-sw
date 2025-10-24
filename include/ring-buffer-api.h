@@ -19,7 +19,7 @@
  *      back of the buffer as a **double-ended queue**.
  *
  * \attention The data buffer **will not** be deallocated automatically but has
- * to be freed by using the arena allocator.
+ *      to be freed by using the arena allocator.
  */
 
 #ifndef RING_BUFFER_API_H
