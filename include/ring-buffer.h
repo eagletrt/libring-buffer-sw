@@ -1,6 +1,6 @@
 /*!
  * \file ring-buffer.h
- * \date 2025-03-29
+ * \date 2026-03-14
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
@@ -24,27 +24,26 @@
 #include <stdbool.h>
 
 /*!
- * \brief Structure definition used to pass the buffer handler as a function parameter
- * \attention This function should not be used directly
+ * \brief Internal state handler for the ring buffer.
  */
-typedef struct {
-    size_t start;
-    size_t size;
-    uint16_t data_size;
-    size_t capacity;
-    void (*cs_enter)(void);
-    void (*cs_exit)(void);
-    void *data;
-} RingBufferHandler_t;
-
+struct RingBufferHandler {
+    size_t start;           /*!< Index of the first element in the buffer */
+    size_t size;            /*!< Current number of elements stored in the buffer */
+    uint16_t data_size;     /*!< Size of a single data element in bytes */
+    size_t capacity;        /*!< Maximum number of elements the buffer can hold */
+    void (*cs_enter)(void); /*!< Optional callback to enter a critical section */
+    void (*cs_exit)(void);  /*!< Optional callback to exit a critical section */
+    void *data;             /*!< Pointer to the raw memory block where data is stored */
+};
 /*!
- * \brief Enum with all the possible return codes for the ring buffer functions
+ * \brief All the possible return codes for the ring buffer functions
  */
-typedef enum {
-    RING_BUFFER_OK,
-    RING_BUFFER_NULL_POINTER,
-    RING_BUFFER_EMPTY,
-    RING_BUFFER_FULL
-} RingBufferReturnCode;
+enum RingBufferReturnCode {
+    RING_BUFFER_RC_OK,           /*!< Operation completed successfully */
+    RING_BUFFER_RC_NULL_POINTER, /*!< A provided pointer was NULL */
+    RING_BUFFER_RC_EMPTY,        /*!< Buffer is empty; cannot pop elements */
+    RING_BUFFER_RC_FULL          /*!< Buffer is full; cannot push elements */
+};
+2
 
 #endif // RING_BUFFER_H

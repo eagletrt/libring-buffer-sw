@@ -1,6 +1,6 @@
 /*!
  * \file ring-buffer-api.h
- * \date 2025-03-29
+ * \date 2026-03-14
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
@@ -23,160 +23,159 @@
 #include "arena-allocator-api.h"
 
 /*!
- * \brief Initialize the buffer
- * \attention The type and capacity parameters must be the same as the ones
- * used in the structure declaration above
+ * \brief Initializes the ring buffer structure and allocates memory.
  *
- * \details If the ring_buffer_new macro is used this function is not needed
+ * \details This function binds the buffer to an arena allocator and sets up 
+ * optional callbacks.
  *
- * \param buffer The buffer hanler structure
- * \param type The type of the items
- * \param capacity The maximum number of elements of the buffer
- * \param cs_enter A pointer to a function that should manage a critical section (can be NULL)
- * \param cs_exit A pointer to a function that should exit a critical section (can be NULL)
- * \param arena The arena allocator handler
- * \return RingBufferReturnCode
- *     - RING_BUFFER_NULL if the buffer handler is NULL
- *     - RING_BUFFER_OK otherwise
+ * \param[in,out] buffer    Pointer to the the handler structure to initialize.
+ * \param[in]     data_size Size of a single element in bytes (e.g., sizeof(int)).
+ * \param[in]     capacity  Maximum number of elements the buffer can hold.
+ * \param[in]     cs_enter  Pointer to function for entering a critical section (optional, can be NULL).
+ * \param[in]     cs_exit   Pointer to function for exiting a critical section (optional, can be NULL).
+ * \param[in,out] arena     Pointer to the ArenaAllocatorHandler used for memory allocation.
+ * \retval RING_BUFFER_RC_NULL_POINTER If buffer or arena is NULL, or if memory allocation fails.
+ * \retval RING_BUFFER_RC_OK           If the initialization was successful.
  */
-RingBufferReturnCode ring_buffer_api_init(
-   RingBufferHandler_t *buffer,
-   size_t data_size,
-   size_t capacity,
-   void (*cs_enter)(void),
-   void (*cs_exit)(void),
-   ArenaAllocatorHandler_t *arena);
+enum RingBufferReturnCode ring_buffer_api_init(
+    struct RingBufferHandler *buffer,
+    size_t data_size,
+    size_t capacity,
+    void (*cs_enter)(void),
+    void (*cs_exit)(void),
+    struct ArenaAllocatorHandler *arena);
 
 /*!
  * \brief Check if the buffer is empty
  *
- * \param buffer The buffer handler structure
+ * \param[in] buffer The buffer handler structure
  * \return True if the buffer is empty, false otherwise
  */
-bool ring_buffer_api_is_empty(const RingBufferHandler_t *buffer);
+bool ring_buffer_api_is_empty(const struct RingBufferHandler *buffer);
 
 /*!
  * \brief Check if the buffer is full
  *
- * \param buffer The buffer handler structure
+ * \param[in] buffer The buffer handler structure
  * \return True if the buffer is full, false otherwise
  */
-bool ring_buffer_api_is_full(const RingBufferHandler_t *buffer);
+bool ring_buffer_api_is_full(const struct RingBufferHandler *buffer);
 
 /*!
  * \brief Get the current number of elements in the buffer
  * 
- * \param buffer The buffer handler structure
+ * \param[in] buffer The buffer handler structure
  * \return size_t The buffer size
  */
-size_t ring_buffer_api_size(const RingBufferHandler_t *buffer);
+size_t ring_buffer_api_size(const struct RingBufferHandler *buffer);
 
 /*!
- * \brief Insert an element af the start of the buffer
+ * \brief Insert an element at the start of the buffer
  *
- * \param buffer The buffer handler structure
- * \param item A pointer to the item to insert
- * \return RingBufferReturnCode
- *     - RING_BUFFER_NULL if the buffer handler or the item are NULL
- *     - RING_BUFFER_FULL if the buffer is full
- *     - RING_BUFFER_OK otherwise
+ * \param[in,out] buffer The buffer handler structure
+ * \param[in] item A pointer to the item to insert
+ * \retval RING_BUFFER_RC_NULL_POINTER if the buffer handler or the item are NULL
+ * \retval RING_BUFFER_RC_FULL if the buffer is full
+ * \retval RING_BUFFER_RC_OK if the item has been has been inserted at the front of the buffer
  */
-RingBufferReturnCode ring_buffer_api_push_front(RingBufferHandler_t *buffer, void *item);
+enum RingBufferReturnCode ring_buffer_api_push_front(struct RingBufferHandler *buffer, const void *item);
 
 /*!
- * \brief Insert an element af the end of the buffer
+ * \brief Insert an element at the end of the buffer
  *
- * \param buffer The buffer handler structure
- * \param item A pointer to the item to insertdum
- * \return RingBufferReturnCode
- *     - RING_BUFFER_NULL if the buffer handler or the item are NULL
- *     - RING_BUFFER_FULL if the buffer is full
- *     - RING_BUFFER_OK otherwise
+ * \param[in,out] buffer The buffer handler structure
+ * \param[in] item A pointer to the item to insert
+ * \retval RING_BUFFER_RC_NULL_POINTER if the buffer handler or the item are NULL
+ * \retval RING_BUFFER_RC_FULL if the buffer is full
+ * \retval RING_BUFFER_RC_OK if the item has been inserted at the back of the buffer
  */
-RingBufferReturnCode ring_buffer_api_push_back(RingBufferHandler_t *buffer, void *item);
+enum RingBufferReturnCode ring_buffer_api_push_back(struct RingBufferHandler *buffer, const void *item);
 
 /*!
  * \brief Remove an element from the front of the buffer
+ *
  * \details The 'out' parameter can be NULL
  *
- * \param buffer The buffer handler structure
- * \param out A pointer to a variable where the removed item is copied into
- * \return RingBufferReturnCode
- *     - RING_BUFFER_NULL if the buffer handler is NULL
- *     - RING_BUFFER_EMPTY if the buffer is empty
- *     - RING_BUFFER_OK otherwise
+ * \param[in,out] buffer The buffer handler structure
+ * \param[out] out A pointer to a variable where the removed item is copied into
+ * \retval RING_BUFFER_RC_NULL_POINTER if the buffer handler is NULL
+ * \retval RING_BUFFER_RC_EMPTY if the buffer is empty
+ * \retval RING_BUFFER_RC_OK if the front element has been removed
  */
-RingBufferReturnCode ring_buffer_api_pop_front(RingBufferHandler_t *buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *buffer, void *out);
 
 /*!
  * \brief Remove an element from the end of the buffer
+ *
  * \details The 'out' parameter can be NULL
  *
- * \param buffer The buffer handler structure
- * \param out A pointer to a variable where the removed item is copied into
- * \return RingBufferReturnCode
- *     - RING_BUFFER_NULL if the buffer handler is NULL
- *     - RING_BUFFER_EMPTY if the buffer is empty
- *     - RING_BUFFER_OK otherwise
+ * \param[in,out] buffer The buffer handler structure
+ * \param[out] out A pointer to a variable where the removed item is copied into
+ * \retval RING_BUFFER_RC_NULL_POINTER if the buffer handler is NULL
+ * \retval RING_BUFFER_RC_EMPTY if the buffer is empty
+ * \retval RING_BUFFER_RC_OK if the back element has been removed
  */
-RingBufferReturnCode ring_buffer_api_pop_back(RingBufferHandler_t *buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *buffer, void *out);
 
 /*!
  * \brief Get a copy of the element at the start of the buffer
  *
- * \param buffer The buffer handler structure
- * \param out A pointer to a variable where the item is copied into
- * \return RingBufferReturnCode
- *     - RING_BUFFER_NULL if the buffer handler or out are NULL
- *     - RING_BUFFER_EMPTY if the buffer is empty
- *     - RING_BUFFER_OK otherwise
+ * \details If the buffer is empty, no data is copied to the destination pointer.
+ * 
+ * \param[in] buffer The buffer handler structure
+ * \param[out] out A pointer to a variable where the item is copied into
+ * \retval RING_BUFFER_RC_NULL_POINTER if the buffer handler or out are NULL
+ * \retval RING_BUFFER_RC_EMPTY if the buffer is empty
+ * \retval RING_BUFFER_RC_OK if a copy of the first element has been created
  */
-RingBufferReturnCode ring_buffer_api_front(RingBufferHandler_t *buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *buffer, void *out);
 
 /*!
  * \brief Get a copy of the element at the end of the buffer
  *
- * \param buffer The buffer handler structure
- * \param out A pointer to a variable where the item is copied into
- * \return RingBufferReturnCode
- *     - RING_BUFFER_NULL if the buffer handler or out are NULL
- *     - RING_BUFFER_EMPTY if the buffer is empty
- *     - RING_BUFFER_OK otherwise
+ * \details If the buffer is empty, no data is copied to the destination pointer.
+ * 
+ * \param[in] buffer The buffer handler structure
+ * \param[out] out A pointer to a variable where the item is copied into
+ * \retval RING_BUFFER_RC_NULL_POINTER if the buffer handler or out are NULL
+ * \retval RING_BUFFER_RC_EMPTY if the buffer is empty
+ * \retval RING_BUFFER_RC_OK if a copy of the last element has been created
  */
-RingBufferReturnCode ring_buffer_api_back(RingBufferHandler_t *buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *buffer, void *out);
 
 /*!
  * \brief Get a pointer to the element at the start of the buffer
- * \attention Keep in mind that the content of the item can change even if the
- * pointer don't
  *
- * \param buffer The buffer handler structure
- * \return void * The item at the start of the buffer
+ * \attention Keep in mind that the content of the item can change even if the
+ * pointer doesn't
+ *
+ * \param[in] buffer The buffer handler structure
+ * \return void * The item at the start of the buffer, or NULL if the buffer is empty
  */
-void *ring_buffer_api_peek_front(RingBufferHandler_t *buffer);
+void *ring_buffer_api_peek_front(const struct RingBufferHandler *buffer);
 
 /*!
  * \brief Get a pointer to the element at the end of the buffer
- * \attention Keep in mind that the content of the item can change even if the
- * pointer don't
  *
- * \param buffer The buffer handler structure
- * \return void * The item at the end of the buffer
+ * \attention Keep in mind that the content of the item can change even if the
+ * pointer doesn't
+ *
+ * \param[in] buffer The buffer handler structure
+ * \return void * The item at the end of the buffer, or NULL if the buffer is empty
  */
-void *ring_buffer_api_peek_back(RingBufferHandler_t *buffer);
+void *ring_buffer_api_peek_back(const struct RingBufferHandler *buffer);
 
 /*!
- * \brief Clear the buffer removing all items
- * \details The actual data is not erased, only the size is modified
+ * \brief Resets the buffer to an empty state.
  *
- * \param buffer The buffer handler structure
- * \return RingBufferReturnCode
- *     - RING_BUFFER_NULL if the buffer handler is NULL
- *     - RING_BUFFER_OK otherwise
+ * \details This function performs a logical clear by resetting the internal 
+ * indices and the size counter. Previously stored data remains in the buffer 
+ * until but it is no longer accessible through the public APIs.
+ *
+ * \param[in,out] buffer Pointer to the buffer handler structure.
+ * \retval RING_BUFFER_RC_NULL_POINTER if the buffer handler is NULL.
+ * \retval RING_BUFFER_RC_OK           if the buffer was successfully reset.
  */
-RingBufferReturnCode ring_buffer_api_clear(RingBufferHandler_t *buffer);
-
-// Function that substitute cs_enter and cs_exit if they are NULL
-void ring_buffer_cs_dummy(void);
+enum RingBufferReturnCode ring_buffer_api_clear(struct RingBufferHandler *buffer);
 
 #endif

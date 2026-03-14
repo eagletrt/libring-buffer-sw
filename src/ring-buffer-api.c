@@ -1,6 +1,6 @@
 /*!
  * \file ring-buffer-api.c
- * \date 2025-03-29
+ * \date 2026-03-14
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
@@ -16,61 +16,69 @@
  *      by using the arena allocator.
  */
 
+#include "eagletrt-api.h"
 #include "ring-buffer-api.h"
 
 #include <string.h>
 
-void ring_buffer_cs_dummy(void) {
+/*!
+ * \brief A "No-Operation" dummy function for critical sections.
+ * \details This function is assigned to the cs_enter and cs_exit pointers 
+ * during initialization if the user provides NULL.
+ */
+void prv_ring_buffer_cs_dummy(void) {
+    EAGLETRT_API_NOP();
 }
 
-RingBufferReturnCode ring_buffer_api_init(
-    RingBufferHandler_t *buffer,
+enum RingBufferReturnCode ring_buffer_api_init(
+    struct RingBufferHandler *buffer,
     size_t data_size,
     size_t capacity,
     void (*cs_enter)(void),
     void (*cs_exit)(void),
-    ArenaAllocatorHandler_t *arena) {
+    struct ArenaAllocatorHandler *arena) {
     if (buffer == NULL || arena == NULL)
-        return RING_BUFFER_NULL_POINTER;
+        return RING_BUFFER_RC_NULL_POINTER;
     buffer->start = 0;
     buffer->size = 0;
     buffer->data_size = data_size;
     buffer->capacity = capacity;
-    buffer->cs_enter = cs_enter != NULL ? cs_enter : ring_buffer_cs_dummy;
-    buffer->cs_exit = cs_exit != NULL ? cs_exit : ring_buffer_cs_dummy;
+    buffer->cs_enter = cs_enter != NULL ? cs_enter : prv_ring_buffer_cs_dummy;
+    buffer->cs_exit = cs_exit != NULL ? cs_exit : prv_ring_buffer_cs_dummy;
     buffer->data = arena_allocator_api_calloc(arena, data_size, capacity);
     if (buffer->data == NULL)
-        return RING_BUFFER_NULL_POINTER;
-    return RING_BUFFER_OK;
+        return RING_BUFFER_RC_NULL_POINTER;
+
+    return RING_BUFFER_RC_OK;
 }
 
-bool ring_buffer_api_is_empty(const RingBufferHandler_t *buffer) {
+bool ring_buffer_api_is_empty(const struct RingBufferHandler *buffer) {
     if (buffer == NULL)
         return true;
     return buffer->size == 0;
 }
 
-bool ring_buffer_api_is_full(const RingBufferHandler_t *buffer) {
+bool ring_buffer_api_is_full(const struct RingBufferHandler *buffer) {
     if (buffer == NULL)
         return false;
     return buffer->size >= buffer->capacity;
 }
 
-size_t ring_buffer_api_size(const RingBufferHandler_t *buffer) {
+size_t ring_buffer_api_size(const struct RingBufferHandler *buffer) {
     if (buffer == NULL)
         return 0U;
     return buffer->size;
 }
 
-RingBufferReturnCode ring_buffer_api_push_front(RingBufferHandler_t *buffer, void *item) {
+enum RingBufferReturnCode ring_buffer_api_push_front(struct RingBufferHandler *buffer, const void *item) {
     if (buffer == NULL || item == NULL)
-        return RING_BUFFER_NULL_POINTER;
+        return RING_BUFFER_RC_NULL_POINTER;
 
     buffer->cs_enter();
 
     if (buffer->size >= buffer->capacity) {
         buffer->cs_exit();
-        return RING_BUFFER_FULL;
+        return RING_BUFFER_RC_FULL;
     }
 
     // Calculate index of the item in the buffer
@@ -85,18 +93,18 @@ RingBufferReturnCode ring_buffer_api_push_front(RingBufferHandler_t *buffer, voi
     memcpy(base + buffer->start * data_size, item, data_size);
 
     buffer->cs_exit();
-    return RING_BUFFER_OK;
+    return RING_BUFFER_RC_OK;
 }
 
-RingBufferReturnCode ring_buffer_api_push_back(RingBufferHandler_t *buffer, void *item) {
+enum RingBufferReturnCode ring_buffer_api_push_back(struct RingBufferHandler *buffer, const void *item) {
     if (buffer == NULL || item == NULL)
-        return RING_BUFFER_NULL_POINTER;
+        return RING_BUFFER_RC_NULL_POINTER;
 
     buffer->cs_enter();
 
     if (buffer->size >= buffer->capacity) {
         buffer->cs_exit();
-        return RING_BUFFER_FULL;
+        return RING_BUFFER_RC_FULL;
     }
 
     // Calculate index of the item in the buffer
@@ -111,18 +119,18 @@ RingBufferReturnCode ring_buffer_api_push_back(RingBufferHandler_t *buffer, void
     ++buffer->size;
 
     buffer->cs_exit();
-    return RING_BUFFER_OK;
+    return RING_BUFFER_RC_OK;
 }
 
-RingBufferReturnCode ring_buffer_api_pop_front(RingBufferHandler_t *buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *buffer, void *out) {
     if (buffer == NULL)
-        return RING_BUFFER_NULL_POINTER;
+        return RING_BUFFER_RC_NULL_POINTER;
 
     buffer->cs_enter();
 
     if (buffer->size == 0) {
         buffer->cs_exit();
-        return RING_BUFFER_EMPTY;
+        return RING_BUFFER_RC_EMPTY;
     }
 
     // Pop the item from the buffer
@@ -139,18 +147,18 @@ RingBufferReturnCode ring_buffer_api_pop_front(RingBufferHandler_t *buffer, void
     --buffer->size;
 
     buffer->cs_exit();
-    return RING_BUFFER_OK;
+    return RING_BUFFER_RC_OK;
 }
 
-RingBufferReturnCode ring_buffer_api_pop_back(RingBufferHandler_t *buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *buffer, void *out) {
     if (buffer == NULL)
-        return RING_BUFFER_NULL_POINTER;
+        return RING_BUFFER_RC_NULL_POINTER;
 
     buffer->cs_enter();
 
     if (buffer->size == 0) {
         buffer->cs_exit();
-        return RING_BUFFER_EMPTY;
+        return RING_BUFFER_RC_EMPTY;
     }
 
     // Pop the item from the buffer
@@ -165,18 +173,18 @@ RingBufferReturnCode ring_buffer_api_pop_back(RingBufferHandler_t *buffer, void 
     --buffer->size;
 
     buffer->cs_exit();
-    return RING_BUFFER_OK;
+    return RING_BUFFER_RC_OK;
 }
 
-RingBufferReturnCode ring_buffer_api_front(RingBufferHandler_t *buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *buffer, void *out) {
     if (buffer == NULL || out == NULL)
-        return RING_BUFFER_NULL_POINTER;
+        return RING_BUFFER_RC_NULL_POINTER;
 
     buffer->cs_enter();
 
     if (buffer->size == 0) {
         buffer->cs_exit();
-        return RING_BUFFER_EMPTY;
+        return RING_BUFFER_RC_EMPTY;
     }
 
     // Copy data
@@ -185,18 +193,18 @@ RingBufferReturnCode ring_buffer_api_front(RingBufferHandler_t *buffer, void *ou
     memcpy(out, base + buffer->start * data_size, data_size);
 
     buffer->cs_exit();
-    return RING_BUFFER_OK;
+    return RING_BUFFER_RC_OK;
 }
 
-RingBufferReturnCode ring_buffer_api_back(RingBufferHandler_t *buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *buffer, void *out) {
     if (buffer == NULL || out == NULL)
-        return RING_BUFFER_NULL_POINTER;
+        return RING_BUFFER_RC_NULL_POINTER;
 
     buffer->cs_enter();
 
     if (buffer->size == 0) {
         buffer->cs_exit();
-        return RING_BUFFER_EMPTY;
+        return RING_BUFFER_RC_EMPTY;
     }
 
     // Copy data
@@ -208,10 +216,10 @@ RingBufferReturnCode ring_buffer_api_back(RingBufferHandler_t *buffer, void *out
     memcpy(out, base + cur * data_size, data_size);
 
     buffer->cs_exit();
-    return RING_BUFFER_OK;
+    return RING_BUFFER_RC_OK;
 }
 
-void *ring_buffer_api_peek_front(RingBufferHandler_t *buffer) {
+void *ring_buffer_api_peek_front(const struct RingBufferHandler *buffer) {
     if (buffer == NULL)
         return NULL;
 
@@ -227,7 +235,7 @@ void *ring_buffer_api_peek_front(RingBufferHandler_t *buffer) {
     return front;
 }
 
-void *ring_buffer_api_peek_back(RingBufferHandler_t *buffer) {
+void *ring_buffer_api_peek_back(const struct RingBufferHandler *buffer) {
     if (buffer == NULL)
         return NULL;
 
@@ -248,12 +256,12 @@ void *ring_buffer_api_peek_back(RingBufferHandler_t *buffer) {
     return back;
 }
 
-RingBufferReturnCode ring_buffer_api_clear(RingBufferHandler_t *buffer) {
+enum RingBufferReturnCode ring_buffer_api_clear(struct RingBufferHandler *buffer) {
     if (buffer == NULL)
-        return RING_BUFFER_NULL_POINTER;
+        return RING_BUFFER_RC_NULL_POINTER;
     buffer->cs_enter();
     buffer->start = 0;
     buffer->size = 0;
     buffer->cs_exit();
-    return RING_BUFFER_OK;
+    return RING_BUFFER_RC_OK;
 }
