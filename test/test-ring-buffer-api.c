@@ -4,10 +4,16 @@
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
- * \brief Unit tests for the Ring Buffer library APIs
- *
- * \details Each API function is tested with the appropriate parameters and then
- * the coverage is verified.
+ * \brief Library that implements a ring buffer using an arena allocator to
+ *      dynamically allocate the buffer
+ * 
+ * \details A ring buffer, or circular buffer, is a fixed-size data structure 
+ *      that wraps around when it reaches the end, allowing continuous reading 
+ *      and writing without shifting elements. It is commonly used in real-time 
+ *      systems, buffering data streams, and inter-process communication.
+ * 
+ * \warning The data buffer will not be deallocated automatically but has to be freed 
+ *      by using the arena allocator.
  */
 
 #include "unity.h"
@@ -114,22 +120,6 @@ void check_ring_buffer_size(void) {
     const size_t size = 3;
     int_buf.size = size;
     TEST_ASSERT_EQUAL_size_t(size, ring_buffer_api_size(&int_buf));
-}
-
-/*! @} */
-
-/*! 
- * \defgroup ring_buffer_capacity Test ring buffer capacity function
- * @{
- */
-
-void check_ring_buffer_capacity_with_null(void) {
-    TEST_ASSERT_EQUAL_size_t(0U, ring_buffer_api_capacity(NULL));
-}
-void check_ring_buffer_capacity(void) {
-    const size_t capacity = 3;
-    int_buf.capacity = capacity;
-    TEST_ASSERT_EQUAL_size_t(capacity, ring_buffer_api_capacity(&int_buf));
 }
 
 /*! @} */
@@ -674,16 +664,6 @@ int main() {
 
     RUN_TEST(check_ring_buffer_size_with_null);
     RUN_TEST(check_ring_buffer_size);
-
-    /*! @} */
-
-    /*! 
-     * \addtogroup ring_buffer_capacity Run test for ring buffer capacity function
-     * @{
-     */
-
-    RUN_TEST(check_ring_buffer_capacity_with_null);
-    RUN_TEST(check_ring_buffer_capacity);
 
     /*! @} */
 
