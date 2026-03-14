@@ -64,7 +64,7 @@ void cs_exit(void) {
 > The example above works by disabling **ALL** the interrupts and by recovering
 > the previous state afterwards, this should be used carefully
 
-The `RingBufferReturnCode` enum is return by most of the functions of this library
+The `enum RingBufferReturnCode` is returned by most of the functions of this library
 and **should always be checked** before attempting other operations with the data structure.
 
 ## Examples

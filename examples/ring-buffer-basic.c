@@ -6,8 +6,8 @@
  *
  * \brief Simple example of a ring buffer that stores integer values.
  * \details In this example, we allocate both the arena allocator and the ring buffer  
- *      and insert some random numbers into it.  
- *      We then check whether the first inserted value is actually at the end of the  
+ *      and insert some random integer numbers into it.
+ *      We then check if the first inserted value is actually at the end of the  
  *      buffer and if the last one is at the start of the buffer.
  *      It can be verified by also printing all the values stored in it.  
  *      At the end of the program, all allocated memory is freed to prevent  
@@ -37,7 +37,7 @@ int main(void) {
     }
 
     // Get items and info about the buffer
-    printf("Buffer size: %lu\n", ring_buffer_api_size(&int_buf));
+    printf("Buffer size: %u\n", ring_buffer_api_size(&int_buf));
     int val = 0;
     if (ring_buffer_api_front(&int_buf, &val) == RING_BUFFER_RC_OK)
         printf("Front element: %d\n", val);

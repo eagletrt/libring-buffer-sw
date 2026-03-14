@@ -4,16 +4,22 @@
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
- * \brief Library that implements a ring buffer using an arena allocator to
- *      dynamically allocate the buffer
+ * \brief Ring Buffer APIs functions
  * 
  * \details A ring buffer, or circular buffer, is a fixed-size data structure 
  *      that wraps around when it reaches the end, allowing continuous reading 
  *      and writing without shifting elements. It is commonly used in real-time 
  *      systems, buffering data streams, and inter-process communication.
  * 
- * \warning The data buffer will not be deallocated automatically but has to be freed 
- *      by using the arena allocator.
+ *      The "pointer" to the first item of the buffer is usually called head or
+ *      **front**, meanwhile the "pointer" to the last element is usually called
+ *      tail or **back**.
+ *
+ *      This ring buffer implementation allows to acces both the front and the
+ *      back of the buffer as a **double-ended queue**.
+ *
+ * \attention The data buffer **will not** be deallocated automatically but has
+ *      to be freed by using the arena allocator.
  */
 
 #ifndef RING_BUFFER_API_H
@@ -46,7 +52,7 @@ enum RingBufferReturnCode ring_buffer_api_init(
     struct ArenaAllocatorHandler *arena);
 
 /*!
- * \brief Check if the buffer is empty
+ * \brief Check if the buffer is **full**
  *
  * \param[in] buffer The buffer handler structure
  * \return True if the buffer is empty, false otherwise
@@ -54,7 +60,7 @@ enum RingBufferReturnCode ring_buffer_api_init(
 bool ring_buffer_api_is_empty(const struct RingBufferHandler *buffer);
 
 /*!
- * \brief Check if the buffer is full
+ * \brief Get the buffer **size**
  *
  * \param[in] buffer The buffer handler structure
  * \return True if the buffer is full, false otherwise
@@ -62,7 +68,11 @@ bool ring_buffer_api_is_empty(const struct RingBufferHandler *buffer);
 bool ring_buffer_api_is_full(const struct RingBufferHandler *buffer);
 
 /*!
- * \brief Get the current number of elements in the buffer
+ * \brief Get the buffer **capacity**
+ *
+ * \details The buffer capacity is the maximum number of items it can handle
+ * simultaneously. The memory is allocated during initialization and cannot be
+ * changed.
  * 
  * \param[in] buffer The buffer handler structure
  * \return size_t The buffer size
@@ -118,7 +128,10 @@ enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *bu
 enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *buffer, void *out);
 
 /*!
- * \brief Get a copy of the element at the start of the buffer
+ * \brief Get the item at the front of the buffer
+ *
+ * \details If the buffer is not empty the first element is copied into the \c out
+ * variable.
  *
  * \details If the buffer is empty, no data is copied to the destination pointer.
  * 
@@ -131,7 +144,13 @@ enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *buf
 enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *buffer, void *out);
 
 /*!
- * \brief Get a copy of the element at the end of the buffer
+ * \brief Get the item at the back of the buffer
+ *
+ * \details If the buffer is not empty the last element is copied into the \c out
+ * variable.
+ *
+ * \note The \c out parameter can be \c NULL.
+ * \important The item is not removed from the buffer.
  *
  * \details If the buffer is empty, no data is copied to the destination pointer.
  * 

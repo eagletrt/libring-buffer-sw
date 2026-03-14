@@ -4,16 +4,22 @@
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
- * \brief Library that implements a ring buffer using an arena allocator to
- *      dynamically allocate the buffer
+ * \brief Ring Buffer APIs functions implementations
  * 
  * \details A ring buffer, or circular buffer, is a fixed-size data structure 
  *      that wraps around when it reaches the end, allowing continuous reading 
  *      and writing without shifting elements. It is commonly used in real-time 
  *      systems, buffering data streams, and inter-process communication.
+ *
+ *      The "pointer" to the first item of the buffer is usually called head or
+ *      **front**, meanwhile the "pointer" to the last element is usually called
+ *      tail or **back**.
+ *
+ *      This ring buffer implementation allows to acces both the front and the
+ *      back of the buffer as a **double-ended queue**.
  * 
- * \warning The data buffer will not be deallocated automatically but has to be freed 
- *      by using the arena allocator.
+ * \attention The data buffer **will not** be deallocated automatically but has
+ *      to be freed by using the arena allocator.
  */
 
 #include "eagletrt-api.h"
