@@ -44,6 +44,5 @@ enum RingBufferReturnCode {
     RING_BUFFER_RC_EMPTY,        /*!< Buffer is empty; cannot pop elements */
     RING_BUFFER_RC_FULL          /*!< Buffer is full; cannot push elements */
 };
-2
 
 #endif // RING_BUFFER_H
