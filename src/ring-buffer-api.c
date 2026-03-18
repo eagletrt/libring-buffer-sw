@@ -1,6 +1,6 @@
 /*!
  * \file ring-buffer-api.c
- * \date 2025-03-29
+ * \date 2026-03-18
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
@@ -22,17 +22,18 @@
  *      to be freed by using the arena allocator.
  */
 
+#include "eagletrt-api.h"
 #include "ring-buffer-api.h"
 
 #include <string.h>
 
 /*!
- * \brief Dummy function for the critical section
- *
- * \details Used to avoid \c NULL checks by assigning to \c cs_enter and \c cs_exit
- * callbacks this function so that it is not actually executed.
+ * \brief A "No-Operation" dummy function for critical sections.
+ * \details This function is assigned to the cs_enter and cs_exit pointers 
+ * during initialization if the user provides NULL.
  */
-static void prv_ring_buffer_api_cs_dummy(void) {
+EAGLETRT_STATIC void prv_ring_buffer_cs_dummy(void) {
+    EAGLETRT_API_NOP();
 }
 
 enum RingBufferReturnCode ring_buffer_api_init(
@@ -41,18 +42,19 @@ enum RingBufferReturnCode ring_buffer_api_init(
     const size_t capacity,
     void (*cs_enter)(void),
     void (*cs_exit)(void),
-    ArenaAllocatorHandler_t *const arena) {
+    struct ArenaAllocatorHandler *const arena) {
     if (buffer == NULL || arena == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
     buffer->start = 0;
     buffer->size = 0;
     buffer->data_size = data_size;
     buffer->capacity = capacity;
-    buffer->cs_enter = cs_enter != NULL ? cs_enter : prv_ring_buffer_api_cs_dummy;
-    buffer->cs_exit = cs_exit != NULL ? cs_exit : prv_ring_buffer_api_cs_dummy;
+    buffer->cs_enter = cs_enter != NULL ? cs_enter : prv_ring_buffer_cs_dummy;
+    buffer->cs_exit = cs_exit != NULL ? cs_exit : prv_ring_buffer_cs_dummy;
     buffer->data = arena_allocator_api_calloc(arena, data_size, capacity);
     if (buffer->data == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
+
     return RING_BUFFER_RC_OK;
 }
 
@@ -206,7 +208,7 @@ enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *
     return RING_BUFFER_RC_OK;
 }
 
-enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *const buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *const buffer, void *const out) {
     if (buffer == NULL || out == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
 

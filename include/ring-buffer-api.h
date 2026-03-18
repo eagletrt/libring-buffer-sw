@@ -1,6 +1,6 @@
 /*!
  * \file ring-buffer-api.h
- * \date 2025-03-29
+ * \date 2026-03-18
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
@@ -45,9 +45,8 @@
  * \param[in] cs_enter The function callback used to enter a critical section
  * \param[in] cs_exit The function callback used to exit a critical section
  * \param[in] arena The arena allocator handler structure
- * \return RingBufferReturnCode
- *     - \c RING_BUFFER_RC_NULL if any parameter is \c NULL or on allocation failure
- *     - \c RING_BUFFER_RC_OK otherwise
+ * \retval RING_BUFFER_RC_NULL_POINTER if any parameter is \c NULL or on allocation failure
+ * \retval RING_BUFFER_RC_OK otherwise
  */
 enum RingBufferReturnCode ring_buffer_api_init(
     struct RingBufferHandler *const buffer,
@@ -55,7 +54,7 @@ enum RingBufferReturnCode ring_buffer_api_init(
     const size_t capacity,
     void (*cs_enter)(void),
     void (*cs_exit)(void),
-    ArenaAllocatorHandler_t *const arena);
+    struct ArenaAllocatorHandler *const arena);
 
 /*!
  * \brief Check if the buffer is **empty**
@@ -80,7 +79,7 @@ bool ring_buffer_api_is_full(const struct RingBufferHandler *const buffer);
  * The maximum size is defined by the buffer capacity
  * 
  * \param[in] buffer The buffer handler structure
- * \return The buffer size
+ * \return size_t The buffer size
  */
 size_t ring_buffer_api_size(const struct RingBufferHandler *const buffer);
 
@@ -92,7 +91,7 @@ size_t ring_buffer_api_size(const struct RingBufferHandler *const buffer);
  * changed.
  * 
  * \param[in] buffer The buffer handler structure
- * \return The buffer capacity
+ * \return size_t The buffer capacity
  */
 size_t ring_buffer_api_capacity(const struct RingBufferHandler *const buffer);
 
@@ -107,10 +106,9 @@ size_t ring_buffer_api_capacity(const struct RingBufferHandler *const buffer);
  *
  * \param[in] buffer The buffer handler structure
  * \param[in] item A **pointer** to the item to add
- * \return RingBufferReturnCode
- *     - \c RING_BUFFER_RC_NULL if any of the parameters are \c NULL
- *     - \c RING_BUFFER_RC_FULL if the buffer is full
- *     - \c RING_BUFFER_RC_OK otherwise
+ * \retval RING_BUFFER_RC_NULL_POINTER if any of the parameters are \c NULL
+ * \retval RING_BUFFER_RC_FULL if the buffer is full
+ * \retval RING_BUFFER_RC_OK otherwise
  */
 enum RingBufferReturnCode ring_buffer_api_push_front(struct RingBufferHandler *const buffer, const void *const item);
 
@@ -125,10 +123,9 @@ enum RingBufferReturnCode ring_buffer_api_push_front(struct RingBufferHandler *c
  *
  * \param[in] buffer The buffer handler structure
  * \param[in] item A **pointer** to the item to add
- * \return RingBufferReturnCode
- *     - \c RING_BUFFER_RC_NULL if any of the parameters are \c NULL
- *     - \c RING_BUFFER_RC_FULL if the buffer is full
- *     - \c RING_BUFFER_RC_OK otherwise
+ * \retval RING_BUFFER_RC_NULL_POINTER if any of the parameters are \c NULL
+ * \retval RING_BUFFER_RC_FULL if the buffer is full
+ * \retval RING_BUFFER_RC_OK otherwise
  */
 enum RingBufferReturnCode ring_buffer_api_push_back(struct RingBufferHandler *const buffer, const void *const item);
 
@@ -142,10 +139,9 @@ enum RingBufferReturnCode ring_buffer_api_push_back(struct RingBufferHandler *co
  *
  * \param[in] buffer The buffer handler structure
  * \param[out] out A reference to the memory area where the item is copied to
- * \return RingBufferReturnCode
- *     - \c RING_BUFFER_RC_NULL if any of the parameters are \c NULL
- *     - \c RING_BUFFER_RC_EMPTY if the buffer is empty
- *     - \c RING_BUFFER_RC_OK otherwise
+ * \retval RING_BUFFER_RC_NULL_POINTER if any of the parameters are \c NULL
+ * \retval RING_BUFFER_RC_EMPTY if the buffer is empty
+ * \retval RING_BUFFER_RC_OK otherwise
  */
 enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *const buffer, void *const out);
 
@@ -159,10 +155,9 @@ enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *co
  *
  * \param[in] buffer The buffer handler structure
  * \param[out] out A reference to the memory area where the item is copied to
- * \return RingBufferReturnCode
- *     - \c RING_BUFFER_RC_NULL if any of the parameters are \c NULL
- *     - \c RING_BUFFER_RC_EMPTY if the buffer is empty
- *     - \c RING_BUFFER_RC_OK otherwise
+ * \retval RING_BUFFER_RC_NULL_POINTER if any of the parameters are \c NULL
+ * \retval RING_BUFFER_RC_EMPTY if the buffer is empty
+ * \retval RING_BUFFER_RC_OK otherwise
  */
 enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *const buffer, void *const out);
 
@@ -177,10 +172,9 @@ enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *con
  *
  * \param[in] buffer The buffer handler structure
  * \param[out] out A reference to the memory area where the item is copied to
- * \return RingBufferReturnCode
- *     - \c RING_BUFFER_RC_NULL if any of the parameters are \c NULL
- *     - \c RING_BUFFER_RC_EMPTY if the buffer is empty
- *     - \c RING_BUFFER_RC_OK otherwise
+ * \retval RING_BUFFER_RC_NULL_POINTER if any of the parameters are \c NULL
+ * \retval RING_BUFFER_RC_EMPTY if the buffer is empty
+ * \retval RING_BUFFER_RC_OK otherwise
  */
 enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *const buffer, void *const out);
 
@@ -195,12 +189,11 @@ enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *
  *
  * \param[in] buffer The buffer handler structure
  * \param[out] out A reference to the memory area where the item is copied to
- * \return RingBufferReturnCode
- *     - \c RING_BUFFER_RC_NULL if any of the parameters are \c NULL
- *     - \c RING_BUFFER_RC_EMPTY if the buffer is empty
- *     - \c RING_BUFFER_RC_OK otherwise
+ * \retval RING_BUFFER_RC_NULL_POINTER if any of the parameters are \c NULL
+ * \retval RING_BUFFER_RC_EMPTY if the buffer is empty
+ * \retval RING_BUFFER_RC_OK otherwise
  */
-enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *const buffer, void *out);
+enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *const buffer, void *const out);
 
 /*!
  * \brief Get a pointer to the front of the buffer
@@ -237,9 +230,8 @@ void *ring_buffer_api_peek_back(const struct RingBufferHandler *const buffer);
  * **only** the size and start of the array are modified
  *
  * \param[in] buffer The buffer handler structure
- * \return RingBufferReturnCode
- *     - \c RING_BUFFER_RC_NULL if any of the parameters are \c NULL
- *     - \c RING_BUFFER_RC_OK otherwise
+ * \retval RING_BUFFER_RC_NULL_POINTER if any of the parameters are \c NULL
+ * \retval RING_BUFFER_RC_OK otherwise
  */
 enum RingBufferReturnCode ring_buffer_api_clear(struct RingBufferHandler *const buffer);
 

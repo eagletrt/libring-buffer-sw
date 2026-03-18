@@ -1,6 +1,6 @@
 /*!
  * \file ring-buffer-basic.c
- * \date 2025-03-29
+ * \date 2026-03-18
  * \authors Antonio Gelain [antonio.gelain2@gmail.com]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
@@ -23,7 +23,7 @@
 
 int main(void) {
     srand(time(NULL));
-    ArenaAllocatorHandler_t arena;
+    struct ArenaAllocatorHandler arena;
     struct RingBufferHandler int_buf;
 
     arena_allocator_api_init(&arena);

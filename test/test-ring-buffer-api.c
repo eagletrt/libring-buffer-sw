@@ -1,13 +1,19 @@
 /*!
  * \file test-ring-buffer-api.c
- * \date 2025-03-29
+ * \date 2026-03-18
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
- * \brief Unit tests for the Ring Buffer library APIs
- *
- * \details Each API function is tested with the appropriate parameters and then
- * the coverage is verified.
+ * \brief Library that implements a ring buffer using an arena allocator to
+ *      dynamically allocate the buffer
+ * 
+ * \details A ring buffer, or circular buffer, is a fixed-size data structure 
+ *      that wraps around when it reaches the end, allowing continuous reading 
+ *      and writing without shifting elements. It is commonly used in real-time 
+ *      systems, buffering data streams, and inter-process communication.
+ * 
+ * \warning The data buffer will not be deallocated automatically but has to be freed 
+ *      by using the arena allocator.
  */
 
 #include "unity.h"
@@ -15,13 +21,17 @@
 
 #include <stdio.h>
 
+/*!
+ * \brief A 2D representation of a point in Cartesian space
+ */
 struct Point {
-    float x, y;
+    float x; /*!< The x coordinate of the point*/
+    float y; /*!< The y coordinate of the point*/
 };
 
 struct RingBufferHandler int_buf;
 struct RingBufferHandler point_buf;
-ArenaAllocatorHandler_t arena;
+struct ArenaAllocatorHandler arena;
 
 void cs_enter(void) {
     printf("Entered\n");
