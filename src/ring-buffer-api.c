@@ -1,6 +1,6 @@
 /*!
  * \file ring-buffer-api.c
- * \date 2026-03-14
+ * \date 2026-03-18
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
@@ -32,17 +32,17 @@
  * \details This function is assigned to the cs_enter and cs_exit pointers 
  * during initialization if the user provides NULL.
  */
-void prv_ring_buffer_cs_dummy(void) {
+EAGLETRT_STATIC void prv_ring_buffer_cs_dummy(void) {
     EAGLETRT_API_NOP();
 }
 
 enum RingBufferReturnCode ring_buffer_api_init(
-    struct RingBufferHandler *buffer,
-    size_t data_size,
-    size_t capacity,
+    struct RingBufferHandler *const buffer,
+    const size_t data_size,
+    const size_t capacity,
     void (*cs_enter)(void),
     void (*cs_exit)(void),
-    struct ArenaAllocatorHandler *arena) {
+    struct ArenaAllocatorHandler *const arena) {
     if (buffer == NULL || arena == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
     buffer->start = 0;
@@ -58,25 +58,31 @@ enum RingBufferReturnCode ring_buffer_api_init(
     return RING_BUFFER_RC_OK;
 }
 
-bool ring_buffer_api_is_empty(const struct RingBufferHandler *buffer) {
+bool ring_buffer_api_is_empty(const struct RingBufferHandler *const buffer) {
     if (buffer == NULL)
         return true;
     return buffer->size == 0;
 }
 
-bool ring_buffer_api_is_full(const struct RingBufferHandler *buffer) {
+bool ring_buffer_api_is_full(const struct RingBufferHandler *const buffer) {
     if (buffer == NULL)
         return false;
     return buffer->size >= buffer->capacity;
 }
 
-size_t ring_buffer_api_size(const struct RingBufferHandler *buffer) {
+size_t ring_buffer_api_size(const struct RingBufferHandler *const buffer) {
     if (buffer == NULL)
         return 0U;
     return buffer->size;
 }
 
-enum RingBufferReturnCode ring_buffer_api_push_front(struct RingBufferHandler *buffer, const void *item) {
+size_t ring_buffer_api_capacity(const struct RingBufferHandler *const buffer) {
+    if (buffer == NULL)
+        return 0U;
+    return buffer->capacity;
+}
+
+enum RingBufferReturnCode ring_buffer_api_push_front(struct RingBufferHandler *const buffer, const void *const item) {
     if (buffer == NULL || item == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
 
@@ -102,7 +108,7 @@ enum RingBufferReturnCode ring_buffer_api_push_front(struct RingBufferHandler *b
     return RING_BUFFER_RC_OK;
 }
 
-enum RingBufferReturnCode ring_buffer_api_push_back(struct RingBufferHandler *buffer, const void *item) {
+enum RingBufferReturnCode ring_buffer_api_push_back(struct RingBufferHandler *const buffer, const void *const item) {
     if (buffer == NULL || item == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
 
@@ -128,7 +134,7 @@ enum RingBufferReturnCode ring_buffer_api_push_back(struct RingBufferHandler *bu
     return RING_BUFFER_RC_OK;
 }
 
-enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *const buffer, void *const out) {
     if (buffer == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
 
@@ -156,7 +162,7 @@ enum RingBufferReturnCode ring_buffer_api_pop_front(struct RingBufferHandler *bu
     return RING_BUFFER_RC_OK;
 }
 
-enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *const buffer, void *const out) {
     if (buffer == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
 
@@ -182,7 +188,7 @@ enum RingBufferReturnCode ring_buffer_api_pop_back(struct RingBufferHandler *buf
     return RING_BUFFER_RC_OK;
 }
 
-enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *const buffer, void *const out) {
     if (buffer == NULL || out == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
 
@@ -202,7 +208,7 @@ enum RingBufferReturnCode ring_buffer_api_front(const struct RingBufferHandler *
     return RING_BUFFER_RC_OK;
 }
 
-enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *buffer, void *out) {
+enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *const buffer, void *const out) {
     if (buffer == NULL || out == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
 
@@ -225,7 +231,7 @@ enum RingBufferReturnCode ring_buffer_api_back(const struct RingBufferHandler *b
     return RING_BUFFER_RC_OK;
 }
 
-void *ring_buffer_api_peek_front(const struct RingBufferHandler *buffer) {
+void *ring_buffer_api_peek_front(const struct RingBufferHandler *const buffer) {
     if (buffer == NULL)
         return NULL;
 
@@ -241,7 +247,7 @@ void *ring_buffer_api_peek_front(const struct RingBufferHandler *buffer) {
     return front;
 }
 
-void *ring_buffer_api_peek_back(const struct RingBufferHandler *buffer) {
+void *ring_buffer_api_peek_back(const struct RingBufferHandler *const buffer) {
     if (buffer == NULL)
         return NULL;
 
@@ -262,7 +268,7 @@ void *ring_buffer_api_peek_back(const struct RingBufferHandler *buffer) {
     return back;
 }
 
-enum RingBufferReturnCode ring_buffer_api_clear(struct RingBufferHandler *buffer) {
+enum RingBufferReturnCode ring_buffer_api_clear(struct RingBufferHandler *const buffer) {
     if (buffer == NULL)
         return RING_BUFFER_RC_NULL_POINTER;
     buffer->cs_enter();

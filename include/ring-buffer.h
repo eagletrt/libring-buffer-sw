@@ -1,6 +1,6 @@
 /*!
  * \file ring-buffer.h
- * \date 2026-03-14
+ * \date 2026-03-18
  * \authors Antonio Gelain [antonio.gelain@studenti.unitn.it]
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
@@ -27,25 +27,34 @@
 #include <stdbool.h>
 
 /*!
- * \brief Internal state handler for the ring buffer.
+ * \brief Handler structure of the Ring Buffer
+ *
+ * \details The \c cs_enter and \c cs_exit callback are needed in a context
+ * where the buffer usage may cause race conditions.
+ * This is often the case in embedded systems for the interrupts since they
+ * change the control flow of the program and could modify the buffer while
+ * it's being used.
+ *
+ * \attention This structure should not be used directly
  */
 struct RingBufferHandler {
     size_t start;           /*!< Index of the first element in the buffer */
-    size_t size;            /*!< Current number of elements stored in the buffer */
-    uint16_t data_size;     /*!< Size of a single data element in bytes */
-    size_t capacity;        /*!< Maximum number of elements the buffer can hold */
-    void (*cs_enter)(void); /*!< Optional callback to enter a critical section */
-    void (*cs_exit)(void);  /*!< Optional callback to exit a critical section */
-    void *data;             /*!< Pointer to the raw memory block where data is stored */
+    size_t size;            /*!< Number of items in the buffer */
+    uint16_t data_size;     /*!< Size of a single item in bytes */
+    size_t capacity;        /*!< Maximum number of items the buffer can handle simultaneously */
+    void (*cs_enter)(void); /*!< Callback function needed to enter a critical section */
+    void (*cs_exit)(void);  /*!< Callback function needed to exit a critical section */
+    void *data;             /*!< Pointer to the array of items of the buffer */
 };
+
 /*!
- * \brief All the possible return codes for the ring buffer functions
+ * \brief Enum with all the possible return codes for the ring buffer functions
  */
 enum RingBufferReturnCode {
-    RING_BUFFER_RC_OK,           /*!< Operation completed successfully */
-    RING_BUFFER_RC_NULL_POINTER, /*!< A provided pointer was NULL */
-    RING_BUFFER_RC_EMPTY,        /*!< Buffer is empty; cannot pop elements */
-    RING_BUFFER_RC_FULL          /*!< Buffer is full; cannot push elements */
+    RING_BUFFER_RC_OK,           /*!< Function executed succesfully */
+    RING_BUFFER_RC_NULL_POINTER, /*!< A NULL parameter was given */
+    RING_BUFFER_RC_EMPTY,        /*!< The buffer is empty */
+    RING_BUFFER_RC_FULL          /*!< The buffer is full */
 };
 
 #endif // RING_BUFFER_H
