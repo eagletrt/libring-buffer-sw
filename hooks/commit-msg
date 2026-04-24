@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Get the commit message from the file Git passes as the first argument
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Define the regex pattern
+# Note: Bash regex for length {1,50} is handled via a standard comparison or extended regex
+REGEX="^(feat|fix|docs|style|refactor|perf|test|chore): .{1,50}$"
+
+if [[ ! $COMMIT_MSG =~ $REGEX ]]; then
+    echo "Commit message does not match the required format."
+    echo "Expected format: <type>: <description>"
+    echo "Where <type> is one of: feat, fix, docs, style, refactor, perf, test, chore"
+    echo "And <description> is a brief summary of the changes (max 50 characters)."
+    exit 1
+fi
+
+echo "Commit message is valid."
+exit 0
