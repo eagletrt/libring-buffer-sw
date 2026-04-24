@@ -1,0 +1,87 @@
+name: PlatformIO Library CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - master
+      - dev
+
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Cache PlatformIO + pip
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio-${{ hashFiles('**/platformio.ini') }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Run Unit Tests
+        run: |
+          if [ ! -f "platformio.ini" ]; then
+            printf "[env:native]\nplatform = native\nlib_deps = Unity, ./\n" > platformio.ini
+            echo "Created platformio.ini"
+          fi
+          pio test -e native
+
+      - name: Compile Examples
+        run: |
+          for example in examples/*/; do
+            if [ -d "$example" ]; then
+              echo "Building $example"
+              pio ci "$example" --board native
+            fi
+          done
+
+  check:
+    name: Static Code Analysis
+    runs-on: ubuntu-latest
+    if: >
+      (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master')) ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Cache PlatformIO + pip
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio
+          key: ${{ runner.os }}-pio-${{ hashFiles('**/platformio.ini') }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Run Static Code Analysis
+        run: |
+          if [ ! -f "platformio.ini" ]; then
+            printf "[env:native]\nplatform = native\nlib_deps = Unity, ./\n" > platformio.ini
+            echo "Created platformio.ini"
+          fi
+          pio check

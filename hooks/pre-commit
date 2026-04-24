@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+import subprocess
+from pathlib import Path
+
+# --- CONFIGURATION ---
+# Hardcoded list of subfolders to format (relative to project root)
+TARGET_DIRS = ["src", "include", "test"]
+
+# File extensions to format
+EXTENSIONS = {".c", ".cpp", ".cc", ".h", ".hpp", ".hh"}
+
+# Path to clang-format executable (can just be "clang-format" if it's in PATH)
+CLANG_FORMAT = "clang-format"
+
+
+def find_git_root() -> Path:
+    try:
+        result = subprocess.run(
+            ['git', 'rev-parse', '--show-toplevel'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            text=True,
+        )
+        path_str = result.stdout.strip()
+        if path_str:
+            path = Path(path_str)
+            if path.is_dir():
+                return path
+        print("[err] Received an invalid path.")
+    except subprocess.CalledProcessError as e:
+        print(f"[err] {e.stderr.strip()}")
+    except Exception as e:
+        print(f"[err] {e}")
+    return None
+
+
+def format_files(files: list[Path]) -> list[Path]:
+    formatted = []
+    for file in files:
+        if file.is_file():
+            try:
+                subprocess.run([CLANG_FORMAT, "-i", str(file)], check=True)
+                formatted.append(file)
+            except FileNotFoundError:
+                print(f"[err] clang-format executable not found: '{CLANG_FORMAT}'")
+                return None
+            except subprocess.CalledProcessError:
+                print(f"[err] Failed to format: {file}")
+                # keep going, but do not mark success
+    return formatted
+
+
+def get_staged_files() -> list[Path]:
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--cached", "--name-only"],
+            stdout=subprocess.PIPE,
+            text=True,
+            check=True
+        )
+        return [Path(line.strip()) for line in result.stdout.splitlines() if Path(line.strip()).exists()]
+    except subprocess.CalledProcessError as e:
+        print(f"[err] {e.stderr.strip()}")
+    except Exception as e:
+        print(f"[err] {e}")
+    return []
+
+
+def stage_files(files: list[Path]) -> bool:
+    if not files:
+        return True
+    try:
+        subprocess.run(["git", "add"] + [str(f) for f in files], check=True)
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"[err] {e.stderr.strip()}")
+    except Exception as e:
+        print(f"[err] {e}")
+    return False
+
+def detect_partial_staging(file: Path) -> bool:
+    #in this script only staged files will be given to this function so
+    #if a file is also unstaged then the file was added to the index and then modified
+    result = subprocess.run(
+        ["git", "diff", "--name-only", file],
+        stdout=subprocess.PIPE,
+        text=True
+    )
+    return bool(result.stdout.strip())
+
+def is_file_in_folders(file_path: Path, root: Path, folder_names) -> bool:
+    file_path = file_path.resolve()
+    for folder in folder_names:
+        target = (root / folder).resolve()
+        if target in file_path.parents:
+            return True
+    return False
+
+if __name__ == "__main__":
+
+    root = find_git_root()
+    if not root:
+        print("[err] Not in a Git repository or an error occurred.")
+        exit(1)
+
+    staged = get_staged_files()
+
+    staged_targeted = [
+        f for f in staged
+        if f.suffix in EXTENSIONS and is_file_in_folders(f, root, TARGET_DIRS)
+    ]
+
+    for f in staged_targeted:
+        if detect_partial_staging(f):
+            print(f"[warn] Partially staged file detected: {f}, script will commit the whole file")
+    
+    formatted = format_files(staged_targeted)
+
+    if formatted is None:
+        print("[err] error occurred when formatting files")
+        exit(1)
+
+    if not stage_files(formatted):
+        print("[err] Failed to stage formatted files")
+        exit(1)

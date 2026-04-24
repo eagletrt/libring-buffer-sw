@@ -18,16 +18,15 @@ This library uses [ArenaAllocator](https://github.com/eagletrt/libarena-allocato
 
 ## Usage
 
-To create a ring buffer, first declare a variable using `RingBufferHandler_t`. In order to initialize it, an arena allocator is needed.\
+To create a ring buffer, first declare a variable using `struct RingBufferHandler`. In order to initialize it, an arena allocator is needed.
+
 For example:
 ```c
-RingBufferHandler_t int_buf;
-RingBufferHandler_t point_buf;
-ArenaAllocatorHandler_t arena;
+struct RingBufferHandler int_buf;
+struct ArenaAllocatorHandler arena;
 
 arena_allocator_api_init(&arena);
 ring_buffer_init(&int_buf, sizeof(int), 10, NULL, NULL, &arena);
-ring_buffer_init(&point_buf, sizeof(struct), 4, NULL, NULL, &arena);
 ```
 
 To remove any trace of the buffer, the solely `ring_buffer_clear` function is not sufficient as it doesn't deallocate the data buffer.
@@ -35,7 +34,6 @@ To do so, `arena_allocator_api_free` will be used as follows:
 
 ```c
 ring_buffer_clear(&int_buf);
-ring_buffer_clear(&point_buf);
 arena_allocator_api_free(&arena);
 ```
 
@@ -66,7 +64,7 @@ void cs_exit(void) {
 > The example above works by disabling **ALL** the interrupts and by recovering
 > the previous state afterwards, this should be used carefully
 
-The `RingBufferReturnCode` enum is return by most of the functions of this library
+The `enum RingBufferReturnCode` is returned by most of the functions of this library
 and **should always be checked** before attempting other operations with the data structure.
 
 ## Examples
