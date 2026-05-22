@@ -24,6 +24,7 @@
 
 #include "eagletrt-api.h"
 #include "ring-buffer-api.h"
+#include "arena-allocator-api.h"
 
 #include <string.h>
 
