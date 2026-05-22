@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import subprocess
+import logging
 from pathlib import Path
 
 # --- CONFIGURATION ---
@@ -12,6 +13,7 @@ EXTENSIONS = {".c", ".cpp", ".cc", ".h", ".hpp", ".hh"}
 # Path to clang-format executable (can just be "clang-format" if it's in PATH)
 CLANG_FORMAT = "clang-format"
 
+LOGGER = logging.getLogger(__name__)
 
 def find_git_root() -> Path:
     try:
@@ -26,27 +28,31 @@ def find_git_root() -> Path:
         if path_str:
             path = Path(path_str)
             if path.is_dir():
+                LOGGER.info(f"Git root path: {path}")
                 return path
-        print("[err] Received an invalid path.")
+        LOGGER.error("[find_git_root] Received an invalid path.")
     except subprocess.CalledProcessError as e:
-        print(f"[err] {e.stderr.strip()}")
+        LOGGER.error(f"[find_git_root] {e.stderr.strip()}")
     except Exception as e:
-        print(f"[err] {e}")
+        LOGGER.error(f"[find_git_root] {e}")
     return None
 
 
 def format_files(files: list[Path]) -> list[Path]:
     formatted = []
+    if len(files)>0:
+        LOGGER.info("Formatting...")
     for file in files:
         if file.is_file():
+            LOGGER.info(f"Formatting: {file}")
             try:
                 subprocess.run([CLANG_FORMAT, "-i", str(file)], check=True)
                 formatted.append(file)
             except FileNotFoundError:
-                print(f"[err] clang-format executable not found: '{CLANG_FORMAT}'")
+                LOGGER.error(f"[format_files] clang-format executable not found: '{CLANG_FORMAT}'")
                 return None
             except subprocess.CalledProcessError:
-                print(f"[err] Failed to format: {file}")
+                LOGGER.error(f"[format_files] Failed to format: {file}")
                 # keep going, but do not mark success
     return formatted
 
@@ -59,11 +65,14 @@ def get_staged_files() -> list[Path]:
             text=True,
             check=True
         )
-        return [Path(line.strip()) for line in result.stdout.splitlines() if Path(line.strip()).exists()]
+        files = [Path(line.strip()) for line in result.stdout.splitlines() if Path(line.strip()).exists()]
+        LOGGER.info(f"Staged files found: {bool(files)}")
+        LOGGER.debug(f"Staged files: {files}")
+        return files 
     except subprocess.CalledProcessError as e:
-        print(f"[err] {e.stderr.strip()}")
+        LOGGER.error(f"[get_staged_files] {e.stderr.strip()}")
     except Exception as e:
-        print(f"[err] {e}")
+        LOGGER.error(f"[get_staged_files] {e}")
     return []
 
 
@@ -71,12 +80,13 @@ def stage_files(files: list[Path]) -> bool:
     if not files:
         return True
     try:
+        LOGGER.info("Staging files")
         subprocess.run(["git", "add"] + [str(f) for f in files], check=True)
         return True
     except subprocess.CalledProcessError as e:
-        print(f"[err] {e.stderr.strip()}")
+        LOGGER.error(f"[stage_files] {e.stderr.strip()}")
     except Exception as e:
-        print(f"[err] {e}")
+        LOGGER.error(f"[stage_files] {e}")
     return False
 
 def detect_partial_staging(file: Path) -> bool:
@@ -87,7 +97,10 @@ def detect_partial_staging(file: Path) -> bool:
         stdout=subprocess.PIPE,
         text=True
     )
-    return bool(result.stdout.strip())
+    res = result.stdout.strip()
+    LOGGER.info(f"Detect partial staging result: {bool(res)}")
+    LOGGER.debug(f"Partial staging result string: {res}")
+    return bool(res)
 
 def is_file_in_folders(file_path: Path, root: Path, folder_names) -> bool:
     file_path = file_path.resolve()
@@ -97,11 +110,13 @@ def is_file_in_folders(file_path: Path, root: Path, folder_names) -> bool:
             return True
     return False
 
-if __name__ == "__main__":
 
+def main():
+    logging.basicConfig(filename='formatter.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s',)
+    LOGGER.info("Start")
     root = find_git_root()
     if not root:
-        print("[err] Not in a Git repository or an error occurred.")
+        LOGGER.error("Not in a Git repository or an error occurred.")
         exit(1)
 
     staged = get_staged_files()
@@ -110,17 +125,19 @@ if __name__ == "__main__":
         f for f in staged
         if f.suffix in EXTENSIONS and is_file_in_folders(f, root, TARGET_DIRS)
     ]
-
     for f in staged_targeted:
         if detect_partial_staging(f):
-            print(f"[warn] Partially staged file detected: {f}, script will commit the whole file")
+            LOGGER.warning(f"Partially staged file detected: {f}, script will commit the whole file")
     
     formatted = format_files(staged_targeted)
 
     if formatted is None:
-        print("[err] error occurred when formatting files")
+        LOGGER.error("error occurred when formatting files")
         exit(1)
 
     if not stage_files(formatted):
-        print("[err] Failed to stage formatted files")
+        LOGGER.error("Failed to stage formatted files")
         exit(1)
+
+if __name__ == "__main__":
+    main()
