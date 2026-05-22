@@ -1,57 +1,57 @@
 {
-  "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
-  "name": "RingBuffer",
-  "version": "0.2.0",
-  "description": "This library implements all the functions used to create and manage a ring buffer. Can be used for any embedded system.",
-  "keywords": [
-    "ring",
-    "buffer",
-    "ring-buffer",
-    "embedded"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/eagletrt/libring-buffer-sw.git"
-  },
-  "authors": [
-    {
-      "name": "Antonio Gelain",
-      "email": "antonio.gelain2@gmail.com",
-      "maintainer": true
+    "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+    "name": "RingBuffer",
+    "version": "0.2.1",
+    "description": "This library implements all the functions used to create and manage a ring buffer. Can be used for any embedded system.",
+    "keywords": [
+        "ring",
+        "buffer",
+        "ring-buffer",
+        "embedded"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/eagletrt/libring-buffer-sw.git"
     },
-    {
-      "name": "Dorijan Di Zepp",
-      "email": "dorijan.dizepp@eagletrt.it",
-      "maintainer": true
+    "authors": [
+        {
+            "name": "Antonio Gelain",
+            "email": "antonio.gelain2@gmail.com",
+            "maintainer": true
+        },
+        {
+            "name": "Dorijan Di Zepp",
+            "email": "dorijan.dizepp@eagletrt.it",
+            "maintainer": true
+        }
+    ],
+    "license": "AGPL-3.0-only",
+    "frameworks": "*",
+    "platforms": "*",
+    "dependencies": [
+        {
+            "name": "ArenaAllocator",
+            "version": "https://github.com/eagletrt/libarena-allocator-sw.git#v2.0.1"
+        },
+        {
+            "name": "LibEagleTrt",
+            "version": "https://github.com/eagletrt/libeagletrt-sw.git#v0.1.0"
+        }
+    ],
+    "headers": [
+        "ring-buffer.h",
+        "ring-buffer-api.h"
+    ],
+    "examples": [
+        {
+            "name": "Simple Ring Buffer Implementation",
+            "src": "examples/ring-buffer-basic.c"
+        }
+    ],
+    "export": {
+        "include": [
+            "src/**",
+            "include/**"
+        ]
     }
-  ],
-  "license": "AGPL-3.0-only",
-  "frameworks": "*",
-  "platforms": "*",
-  "dependencies": [
-    {
-      "name": "ArenaAllocator",
-      "version": "https://github.com/eagletrt/libarena-allocator-sw.git#v2.0.0"
-    },
-    {
-      "name": "LibEagleTrt",
-      "version": "https://github.com/eagletrt/libeagletrt-sw.git#v0.1.0"
-    }
-  ],
-  "headers": [
-    "ring-buffer.h",
-    "ring-buffer-api.h"
-  ],
-  "examples": [
-    {
-      "name": "Simple Ring Buffer Implementation",
-      "src": "examples/ring-buffer-basic.c"
-    }
-  ],
-  "export": {
-    "include": [
-      "src/**",
-      "include/**"
-    ]
-  }
 }

@@ -6,18 +6,19 @@
  *
  * \brief Library that implements a ring buffer using an arena allocator to
  *      dynamically allocate the buffer
- * 
- * \details A ring buffer, or circular buffer, is a fixed-size data structure 
- *      that wraps around when it reaches the end, allowing continuous reading 
- *      and writing without shifting elements. It is commonly used in real-time 
+ *
+ * \details A ring buffer, or circular buffer, is a fixed-size data structure
+ *      that wraps around when it reaches the end, allowing continuous reading
+ *      and writing without shifting elements. It is commonly used in real-time
  *      systems, buffering data streams, and inter-process communication.
- * 
- * \warning The data buffer will not be deallocated automatically but has to be freed 
+ *
+ * \warning The data buffer will not be deallocated automatically but has to be freed
  *      by using the arena allocator.
  */
 
 #include "unity.h"
 #include "ring-buffer-api.h"
+#include "arena-allocator-api.h"
 
 #include <stdio.h>
 
@@ -53,7 +54,7 @@ void tearDown(void) {
     arena_allocator_api_free(&arena);
 }
 
-/*! 
+/*!
  * \defgroup ring_buffer_init Test ring buffer initialization
  * @{
  */
@@ -72,7 +73,7 @@ void check_ring_buffer_init_defined_cs_function(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_empty Test ring buffer empty function
  * @{
  */
@@ -90,7 +91,7 @@ void check_ring_buffer_empty_when_not_empty(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_full Test ring buffer full function
  * @{
  */
@@ -108,7 +109,7 @@ void check_ring_buffer_full_when_not_full(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_size Test ring buffer size function
  * @{
  */
@@ -124,7 +125,7 @@ void check_ring_buffer_size(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_capacity Test ring buffer capacity function
  * @{
  */
@@ -140,7 +141,7 @@ void check_ring_buffer_capacity(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_push_front Test ring buffer push front function
  * @{
  */
@@ -206,7 +207,7 @@ void check_ring_buffer_push_front_without_wrap_data(void) {
 
 /*| @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_push_back Test ring buffer push back function
  * @{
  */
@@ -263,7 +264,7 @@ void check_ring_buffer_push_back_without_wrap_data(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_pop_front Test ring buffer pop front function
  * @{
  */
@@ -364,7 +365,7 @@ void check_ring_buffer_pop_front_without_wrap_data(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_pop_back Test ring buffer pop back function
  * @{
  */
@@ -445,7 +446,7 @@ void check_ring_buffer_pop_back_without_wrap_data(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_front Test ring buffer front function
  * @{
  */
@@ -482,7 +483,7 @@ void check_ring_buffer_front_when_not_empty_data(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_back Test ring buffer back function
  * @{
  */
@@ -531,7 +532,7 @@ void check_ring_buffer_back_when_full_with_wrap_data(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_peek_front Test ring buffer peek front
  * @{
  */
@@ -583,7 +584,7 @@ void check_ring_buffer_peek_back_when_full_with_wrap_data(void) {
 
 /*! @} */
 
-/*! 
+/*!
  * \defgroup ring_buffer_clear Test ring buffer clear function
  * @{
  */
@@ -640,7 +641,7 @@ void check_ring_buffer_clear_size(void) {
 int main() {
     UNITY_BEGIN();
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_init Run test for ring buffer initialization
      * @{
      */
@@ -651,7 +652,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_empty Run test for ring buffer empty function
      * @{
      */
@@ -662,7 +663,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_full Run test for ring buffer full function
      * @{
      */
@@ -673,7 +674,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_size Run test for ring buffer size function
      * @{
      */
@@ -683,7 +684,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_capacity Run test for ring buffer capacity function
      * @{
      */
@@ -693,7 +694,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_push_front Run test for ring buffer push front function
      * @{
      */
@@ -712,7 +713,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_push_back Run test for ring buffer push back function
      * @{
      */
@@ -729,7 +730,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_pop_front Run test for ring buffer pop front function
      * @{
      */
@@ -748,7 +749,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_pop_back Run test for ring buffer pop back function
      * @{
      */
@@ -765,7 +766,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_front Run test for ring buffer front function
      * @{
      */
@@ -778,7 +779,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_back Run test for ring buffer back function
      * @{
      */
@@ -791,7 +792,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_peek_front Run test for ring buffer peek front
      * @{
      */
@@ -807,7 +808,7 @@ int main() {
 
     /*! @} */
 
-    /*! 
+    /*!
      * \addtogroup ring_buffer_clear Run test for ring buffer clear function
      * @{
      */

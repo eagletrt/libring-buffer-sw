@@ -5,17 +5,17 @@
  * \authors Dorijan Di Zepp [dorijan.dizepp@eagletrt.it]
  *
  * \brief Structures, Enumerations and various constants needed to use the Ring Buffer library
- * 
- * \details A ring buffer, or circular buffer, is a **fixed-size** data structure 
- *      that wraps around when it reaches the end, allowing continuous reading 
- *      and writing without shifting elements. It is commonly used in real-time 
+ *
+ * \details A ring buffer, or circular buffer, is a **fixed-size** data structure
+ *      that wraps around when it reaches the end, allowing continuous reading
+ *      and writing without shifting elements. It is commonly used in real-time
  *      systems, buffering data streams, and inter-process communication.
  *
  *      This circular buffer implementation uses a heap-allocated array and uses
  *      the **index** of the first element and the **number of items** in the buffer to
  *      keep track of the data.
- *  
- * \attention The data buffer will not be deallocated automatically but has to be freed 
+ *
+ * \attention The data buffer will not be deallocated automatically but has to be freed
  *      by using the Arena Allocator.
  */
 
