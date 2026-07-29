@@ -126,6 +126,21 @@ void check_ring_buffer_size(void) {
 /*! @} */
 
 /*!
+ * \defgroup ring_buffer_item_size Test ring buffer item size function
+ * @{
+ */
+
+void check_ring_buffer_item_size_with_null(void) {
+    TEST_ASSERT_EQUAL_size_t(0U, ring_buffer_api_item_size(NULL));
+}
+void check_ring_buffer_item_size(void) {
+    TEST_ASSERT_EQUAL_size_t(sizeof(int), ring_buffer_api_item_size(&int_buf));
+    TEST_ASSERT_EQUAL_size_t(sizeof(struct Point), ring_buffer_api_item_size(&point_buf));
+}
+
+/*! @} */
+
+/*!
  * \defgroup ring_buffer_capacity Test ring buffer capacity function
  * @{
  */
@@ -681,6 +696,16 @@ int main() {
 
     RUN_TEST(check_ring_buffer_size_with_null);
     RUN_TEST(check_ring_buffer_size);
+
+    /*! @} */
+
+    /*!
+     * \addtogroup ring_buffer_item_size Run test for ring buffer item size function
+     * @{
+     */
+
+    RUN_TEST(check_ring_buffer_item_size_with_null);
+    RUN_TEST(check_ring_buffer_item_size);
 
     /*! @} */
 

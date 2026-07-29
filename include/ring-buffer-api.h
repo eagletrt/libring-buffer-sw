@@ -84,6 +84,14 @@ bool ring_buffer_api_is_full(const struct RingBufferHandler *buffer);
 size_t ring_buffer_api_size(const struct RingBufferHandler *buffer);
 
 /*!
+ * \brief Get the size of a single buffer item in bytes
+ *
+ * \param[in] buffer The buffer handler structure
+ * \return size_t The item size in bytes
+ */
+size_t ring_buffer_api_item_size(const struct RingBufferHandler *buffer);
+
+/*!
  * \brief Get the buffer **capacity**
  *
  * \details The buffer capacity is the maximum number of items it can handle
