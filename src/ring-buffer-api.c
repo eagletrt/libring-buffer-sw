@@ -81,6 +81,13 @@ size_t ring_buffer_api_size(const struct RingBufferHandler *const buffer) {
     return buffer->size;
 }
 
+size_t ring_buffer_api_item_size(const struct RingBufferHandler *const buffer) {
+    if (buffer == NULL) {
+        return 0U;
+    }
+    return buffer->data_size;
+}
+
 size_t ring_buffer_api_capacity(const struct RingBufferHandler *const buffer) {
     if (buffer == NULL) {
         return 0U;
